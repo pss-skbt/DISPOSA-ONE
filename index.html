@@ -63,6 +63,9 @@
         <nav class="mt-2 flex-1">
             <button onclick="switchTab('dashboard')" id="btn-dashboard" class="sidebar-item active-tab w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-th-large mr-3 w-4"></i> Dashboard</button>
 
+            <div class="nav-group-label">AI DISPOSA <span class="text-emerald-400">(Baharu)</span></div>
+            <button onclick="switchTab('ai')" id="btn-ai" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-robot mr-3 w-4"></i> Pembantu AI</button>
+
             <div class="nav-group-label">Aset &amp; Inventori</div>
             <button onclick="switchTab('tetapan')" id="btn-tetapan" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-cog mr-3 w-4"></i> Tetapan Sekolah</button>
             <button onclick="switchTab('aset')" id="btn-aset" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-boxes mr-3 w-4"></i> Daftar Aset</button>
@@ -111,7 +114,7 @@
                         <h3 id="stat-total" class="text-3xl font-bold mt-1">0</h3>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <div class="bg-white p-6 rounded-xl shadow-sm border md:col-span-2">
                         <h3 class="text-sm font-bold text-gray-500 uppercase mb-4">Aset Mengikut Jenis</h3>
                         <div id="kategori-chart"></div>
@@ -119,7 +122,59 @@
                     <div class="bg-white p-6 rounded-xl shadow-sm border flex flex-col justify-center items-center text-center">
                         <p class="text-sm text-gray-500 font-medium uppercase">Status Sistem</p>
                         <h3 class="text-3xl font-bold mt-1 text-green-500">AKTIF</h3>
-                        <p class="text-xs text-gray-400 mt-3">DISPOSA ONE v1.0 — KIK Kebangsaan</p>
+                        <p class="text-xs text-gray-400 mt-3">DISPOSA ONE v1.1 — KIK Kebangsaan</p>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 text-white p-6 rounded-xl shadow-sm border">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3 class="font-bold text-lg flex items-center gap-2"><i class="fas fa-robot"></i> Analisis Pintar AI</h3>
+                            <p class="text-xs text-indigo-200">Dikuasakan oleh Claude — insight automatik daripada data aset &amp; kerosakan anda.</p>
+                        </div>
+                        <button onclick="goToAIInsight()" class="bg-white text-indigo-700 font-bold text-xs px-4 py-2 rounded-lg hover:bg-indigo-50 whitespace-nowrap"><i class="fas fa-magic mr-1"></i> Jana Analisis</button>
+                    </div>
+                    <div id="ai-insight-box-dash" class="text-sm text-indigo-100"><p class="text-indigo-200 text-xs">Klik "Jana Analisis" untuk mendapat cadangan pintar berdasarkan data semasa.</p></div>
+                </div>
+            </div>
+
+            <!-- ===================== AI DISPOSA ===================== -->
+            <div id="view-ai" class="hidden">
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-xl text-[11px] text-indigo-700">
+                        <i class="fas fa-shield-alt mr-1"></i> API Key anda disimpan <b>hanya pada pelayar ini</b> (localStorage) dan digunakan untuk menghubungi API Anthropic terus daripada pelayar anda — tidak pernah dihantar ke mana-mana pelayan lain. Jangan kongsi fail sistem ini bersama API Key tertanam. Elakkan guna di komputer awam/dikongsi.
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border">
+                        <h3 class="text-lg font-bold mb-4 border-b pb-2 text-indigo-900 flex items-center"><i class="fas fa-key mr-2 text-indigo-600"></i> Tetapan AI</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Anthropic API Key</label>
+                                <input type="password" id="ai_api_key" placeholder="sk-ant-..." class="w-full p-3 bg-gray-50 border rounded-lg text-sm">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Model ID</label>
+                                <input type="text" id="ai_model" placeholder="claude-sonnet-4-5" class="w-full p-3 bg-gray-50 border rounded-lg text-sm">
+                                <p class="text-[10px] text-gray-400 mt-1">Kemaskini mengikut model terkini di console.anthropic.com jika perlu.</p>
+                            </div>
+                        </div>
+                        <button onclick="saveAISettings()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold text-sm hover:bg-indigo-700"><i class="fas fa-save mr-1"></i> Simpan Tetapan AI</button>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border">
+                        <h3 class="text-lg font-bold mb-4 border-b pb-2 text-indigo-900 flex items-center"><i class="fas fa-chart-line mr-2 text-indigo-600"></i> Analisis Pintar Aset</h3>
+                        <button onclick="generateAIInsight()" class="bg-emerald-600 text-white px-5 py-2 rounded-lg font-bold text-sm hover:bg-emerald-700 mb-4"><i class="fas fa-magic mr-1"></i> Jana Analisis AI</button>
+                        <div id="ai-insight-box" class="bg-gray-50 border rounded-xl p-4"><p class="text-gray-400 text-sm">Klik butang di atas untuk menjana analisis pintar berdasarkan Daftar Aset &amp; Laporan Kerosakan semasa.</p></div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border">
+                        <h3 class="text-lg font-bold mb-4 border-b pb-2 text-indigo-900 flex items-center"><i class="fas fa-comments mr-2 text-indigo-600"></i> Pembantu AI DISPOSA</h3>
+                        <div id="ai-chat-log" class="h-72 overflow-y-auto bg-gray-50 border rounded-xl p-4 mb-4">
+                            <div class="text-left mb-2"><span class="inline-block bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm max-w-[80%]">Salam! Saya Pembantu AI DISPOSA ONE. Saya boleh bantu jawab soalan berkaitan pengurusan aset, inventori &amp; prosedur pelupusan sekolah. Apa yang boleh saya bantu?</span></div>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" id="ai-chat-input" placeholder="Taip soalan anda di sini..." class="flex-1 p-3 bg-gray-50 border rounded-lg text-sm" onkeypress="if(event.key==='Enter'){sendAIChat();}">
+                            <button onclick="sendAIChat()" class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-indigo-700"><i class="fas fa-paper-plane"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -368,8 +423,11 @@
                             </div>
                         </div>
                         <div class="mb-4">
-                            <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Keterangan Kerosakan</label>
-                            <textarea id="k_keterangan" rows="3" class="w-full p-3 bg-gray-50 border rounded-lg text-sm resize-none" placeholder="Huraikan kerosakan yang dikesan..."></textarea>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-[10px] font-bold text-gray-500 uppercase block">Keterangan Kerosakan</label>
+                                <button type="button" id="btn-ai-kerosakan" onclick="aiPerhalusiKerosakan()" class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg hover:bg-indigo-100"><i class="fas fa-robot mr-1"></i> Perhalusi dengan AI</button>
+                            </div>
+                            <textarea id="k_keterangan" rows="3" class="w-full p-3 bg-gray-50 border rounded-lg text-sm resize-none" placeholder="Huraikan kerosakan yang dikesan (ringkas), AI akan bantu perhalusi ayat..."></textarea>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                             <div>
@@ -940,6 +998,10 @@ window.onload = () => {
     }
     document.getElementById('current-date').innerText = new Intl.DateTimeFormat('ms-MY', { dateStyle: 'full' }).format(new Date());
     if (schoolLogoBase64) updateLogoPreview(schoolLogoBase64);
+    const savedKey = localStorage.getItem('disposa_ai_key') || '';
+    const savedModel = localStorage.getItem('disposa_ai_model') || 'claude-sonnet-4-5';
+    if (document.getElementById('ai_api_key')) document.getElementById('ai_api_key').value = savedKey;
+    if (document.getElementById('ai_model')) document.getElementById('ai_model').value = savedModel;
     addItem('borang');
     addItem('borang2');
     renderAssetsTable();
@@ -955,14 +1017,14 @@ window.onload = () => {
 
 // ============ TABS ============
 function switchTab(tab) {
-    const all = ['dashboard','tetapan','aset','kerosakan','pelupusan','perakuan','surat','borang','borang2','borang12','list'];
+    const all = ['dashboard','ai','tetapan','aset','kerosakan','pelupusan','perakuan','surat','borang','borang2','borang12','list'];
     all.forEach(t => {
         document.getElementById(`view-${t}`).classList.add('hidden');
         document.getElementById(`btn-${t}`).classList.remove('active-tab');
     });
     document.getElementById(`view-${tab}`).classList.remove('hidden');
     document.getElementById(`btn-${tab}`).classList.add('active-tab');
-    const titles = { dashboard:'Dashboard', tetapan:'Tetapan Sekolah', aset:'Daftar Aset', kerosakan:'Laporan Kerosakan', pelupusan:'Pelupusan Aset (KEW.PA-14)', perakuan:'Perakuan Pelupusan (KEW.PA-16)', surat:'Surat Iringan', borang:'Borang 9/08', borang2:'Borang 2/08', borang12:'Borang 12/08', list:'Senarai Rekod' };
+    const titles = { dashboard:'Dashboard', ai:'Pembantu AI DISPOSA', tetapan:'Tetapan Sekolah', aset:'Daftar Aset', kerosakan:'Laporan Kerosakan', pelupusan:'Pelupusan Aset (KEW.PA-14)', perakuan:'Perakuan Pelupusan (KEW.PA-16)', surat:'Surat Iringan', borang:'Borang 9/08', borang2:'Borang 2/08', borang12:'Borang 12/08', list:'Senarai Rekod' };
     document.getElementById('tab-title').innerText = titles[tab] || tab;
     if (tab === 'kerosakan') populateAsetDropdown();
     if (tab === 'dashboard') updateStats();
@@ -975,6 +1037,154 @@ function previewLogo(e) {
 }
 function removeLogo() { schoolLogoBase64 = null; localStorage.removeItem('disposa_school_logo'); document.getElementById('logo-preview-container').innerHTML = `<span class="text-gray-400 text-[10px] text-center px-2">Tiada Logo Sekolah</span>`; }
 function updateLogoPreview(b) { document.getElementById('logo-preview-container').innerHTML = `<img src="${b}">`; }
+
+// ============================================================
+//  MODUL AI DISPOSA
+// ============================================================
+function saveAISettings() {
+    const key = document.getElementById('ai_api_key').value.trim();
+    const model = document.getElementById('ai_model').value.trim() || 'claude-sonnet-4-5';
+    localStorage.setItem('disposa_ai_key', key);
+    localStorage.setItem('disposa_ai_model', model);
+    alert('Tetapan AI disimpan pada pelayar ini.');
+}
+function getAICreds() {
+    const apiKey = localStorage.getItem('disposa_ai_key') || '';
+    const model = localStorage.getItem('disposa_ai_model') || 'claude-sonnet-4-5';
+    if (!apiKey) throw new Error('Sila masukkan API Key Anthropic anda dahulu di tab "Pembantu AI" > Tetapan AI.');
+    return { apiKey, model };
+}
+async function callClaudeAPI(userPrompt, systemPrompt) {
+    const { apiKey, model } = getAICreds();
+    const body = { model, max_tokens: 700, messages: [{ role: 'user', content: userPrompt }] };
+    if (systemPrompt) body.system = systemPrompt;
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify(body)
+    });
+    if (!res.ok) { const t = await res.text(); throw new Error(`Ralat API (${res.status}): ${t}`); }
+    const data = await res.json();
+    return (data.content || []).filter(c => c.type === 'text').map(c => c.text).join('\n').trim();
+}
+
+// ---- Jana Sebab Cadangan Pelupusan (per baris borang KEW.PA-14) ----
+async function aiSebabPelupusan(btn) {
+    const row = btn.closest('tr');
+    const nama = row.querySelector('.p-nama').value;
+    const tahun = row.querySelector('.p-tahun').value;
+    const harga = row.querySelector('.p-harga').value;
+    const sebabInput = row.querySelector('.p-sebab');
+    const original = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
+    try {
+        const prompt = `Aset: "${nama || 'Tidak dinyatakan'}", tahun perolehan: ${tahun || 'tidak diketahui'}, harga asal: RM${harga || '0'}. Tulis SATU ayat ringkas dan formal (Bahasa Melayu rasmi kerajaan, tidak lebih 25 patah perkataan) sebagai "Sebab Cadangan Pelupusan" untuk borang rasmi KEW.PA. Jangan beri penjelasan tambahan atau tanda petik, hanya ayat tersebut sahaja.`;
+        const result = await callClaudeAPI(prompt, 'Anda membantu kakitangan sekolah menulis ayat rasmi untuk borang pelupusan aset kerajaan Malaysia.');
+        sebabInput.value = result.replace(/^"|"$/g, '').trim();
+    } catch (err) { alert('Ralat AI: ' + err.message); }
+    finally { btn.innerHTML = original; btn.disabled = false; }
+}
+
+// ---- Perhalusi Keterangan Laporan Kerosakan ----
+async function aiPerhalusiKerosakan() {
+    const el = document.getElementById('k_keterangan');
+    const selEl = document.getElementById('k_aset_select');
+    const nama = (selEl.value === 'manual' ? document.getElementById('k_nama_manual').value : selEl.selectedOptions[0]?.text) || '';
+    const jenis = document.getElementById('k_jenis').value;
+    const draft = el.value.trim();
+    if (!draft) { alert('Sila taip draf keterangan kerosakan dahulu (ringkas pun boleh).'); return; }
+    const btn = document.getElementById('btn-ai-kerosakan');
+    const original = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI...'; btn.disabled = true;
+    try {
+        const prompt = `Aset: ${nama || 'Tidak dinyatakan'}. Jenis kerosakan: ${jenis}. Draf keterangan (tidak formal): "${draft}". Tulis semula sebagai keterangan kerosakan yang formal, jelas dan ringkas (2-3 ayat) untuk laporan rasmi sekolah, dalam Bahasa Melayu. Berikan hanya teks keterangan sahaja tanpa tajuk atau nombor.`;
+        const result = await callClaudeAPI(prompt, 'Anda membantu menulis laporan kerosakan aset sekolah secara formal dalam Bahasa Melayu.');
+        el.value = result;
+    } catch (err) { alert('Ralat AI: ' + err.message); }
+    finally { btn.innerHTML = original; btn.disabled = false; }
+}
+
+// ---- Analisis Pintar Aset ----
+async function generateAIInsight() {
+    switchTab('ai');
+    const box = document.getElementById('ai-insight-box');
+    const boxDash = document.getElementById('ai-insight-box-dash');
+    const loadingHTML = '<p class="text-gray-400 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Menganalisis data aset...</p>';
+    if (box) box.innerHTML = loadingHTML;
+    if (boxDash) boxDash.innerHTML = '<p class="text-indigo-200 text-xs"><i class="fas fa-spinner fa-spin mr-1"></i> Menganalisis...</p>';
+    const totalAset = assetsList.length;
+    const rosak = assetsList.filter(a => a.status === 'Rosak').length;
+    const cadangLupus = assetsList.filter(a => a.status === 'Cadang Lupus').length;
+    const dilupus = assetsList.filter(a => a.status === 'Dilupuskan').length;
+    const byJenis = {};
+    assetsList.forEach(a => { const k = a.jenis || 'Lain-lain'; byJenis[k] = (byJenis[k] || 0) + 1; });
+    const jumlahLaporanKerosakan = damageList.length;
+    const summary = `Jumlah aset: ${totalAset}. Rosak: ${rosak}. Cadang lupus: ${cadangLupus}. Telah dilupuskan: ${dilupus}. Taburan ikut jenis: ${JSON.stringify(byJenis)}. Jumlah laporan kerosakan: ${jumlahLaporanKerosakan}.`;
+    const prompt = `Berikut ringkasan data pengurusan aset sebuah sekolah:\n${summary}\n\nBerikan analisis ringkas (maksimum 5 mata pandang bullet, guna simbol "•") dalam Bahasa Melayu tentang trend, risiko, dan cadangan tindakan untuk pihak pengurusan sekolah. Fokus kepada insight praktikal, bukan ulangan data mentah.`;
+    try {
+        if (!assetsList.length) throw new Error('Tiada data aset lagi. Sila daftar aset di tab Daftar Aset dahulu.');
+        const result = await callClaudeAPI(prompt, 'Anda adalah penasihat pengurusan aset sekolah yang memberi insight ringkas dan praktikal.');
+        const html = `<div class="text-sm whitespace-pre-line">${result.replace(/</g, '&lt;')}</div>`;
+        if (box) box.innerHTML = `<div class="text-gray-700">${html}</div>`;
+        if (boxDash) boxDash.innerHTML = html;
+    } catch (err) {
+        const errHtml = `<p class="text-red-300 text-sm">${err.message}</p>`;
+        if (box) box.innerHTML = `<p class="text-red-500 text-sm">${err.message}</p>`;
+        if (boxDash) boxDash.innerHTML = errHtml;
+    }
+}
+function goToAIInsight() { generateAIInsight(); }
+
+// ---- Pembantu AI Chat ----
+let aiChatHistory = [];
+function appendChatBubble(role, text) {
+    const log = document.getElementById('ai-chat-log');
+    const div = document.createElement('div');
+    div.className = role === 'user' ? 'text-right mb-2' : 'text-left mb-2';
+    const bubbleClass = role === 'user'
+        ? 'inline-block bg-indigo-600 text-white px-3 py-2 rounded-lg text-sm max-w-[80%]'
+        : (role === 'assistant-loading' ? 'inline-block bg-gray-100 text-gray-400 px-3 py-2 rounded-lg text-sm' : 'inline-block bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm max-w-[80%] whitespace-pre-line');
+    const idAttr = role === 'assistant-loading' ? 'id="ai-loading-bubble"' : '';
+    div.innerHTML = `<span class="${bubbleClass}" ${idAttr}>${String(text).replace(/</g, '&lt;')}</span>`;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+}
+function removeLoadingBubble() { const el = document.getElementById('ai-loading-bubble'); if (el) el.parentElement.remove(); }
+async function sendAIChat() {
+    const input = document.getElementById('ai-chat-input');
+    const msg = input.value.trim();
+    if (!msg) return;
+    appendChatBubble('user', msg);
+    input.value = '';
+    aiChatHistory.push({ role: 'user', content: msg });
+    appendChatBubble('assistant-loading', 'Menaip...');
+    try {
+        const { apiKey, model } = getAICreds();
+        const res = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+            body: JSON.stringify({
+                model, max_tokens: 700,
+                system: 'Anda ialah Pembantu AI dalam sistem DISPOSA ONE untuk membantu pengurusan aset, inventori dan pelupusan sekolah di Malaysia. Jawab ringkas, profesional, dalam Bahasa Melayu melainkan diminta sebaliknya.',
+                messages: aiChatHistory
+            })
+        });
+        if (!res.ok) { const t = await res.text(); throw new Error(`Ralat API (${res.status}): ${t}`); }
+        const data = await res.json();
+        const text = (data.content || []).filter(c => c.type === 'text').map(c => c.text).join('\n').trim();
+        aiChatHistory.push({ role: 'assistant', content: text });
+        removeLoadingBubble();
+        appendChatBubble('assistant', text || '(Tiada respons)');
+    } catch (err) {
+        removeLoadingBubble();
+        appendChatBubble('assistant', 'Ralat: ' + err.message);
+    }
+}
 
 // ============================================================
 //  MODUL ASET & INVENTORI
@@ -1255,7 +1465,7 @@ function addPelupusanItem(data = {}) {
         <td class="p-2 border-b"><input type="text" class="w-full p-1 border rounded text-xs p-tahun" value="${data.tahun || ''}"></td>
         <td class="p-2 border-b"><input type="text" class="w-full p-1 border rounded text-xs p-harga" value="${data.harga || ''}"></td>
         <td class="p-2 border-b"><input type="text" class="w-full p-1 border rounded text-xs p-kuantiti" value="${data.kuantiti || '1'}"></td>
-        <td class="p-2 border-b"><input type="text" class="w-full p-1 border rounded text-xs p-sebab" value="${data.sebab || 'Rosak/Uzur - Tidak Ekonomik Dibaiki'}"></td>
+        <td class="p-2 border-b"><div class="flex gap-1"><input type="text" class="w-full p-1 border rounded text-xs p-sebab" value="${data.sebab || 'Rosak/Uzur - Tidak Ekonomik Dibaiki'}"><button type="button" onclick="aiSebabPelupusan(this)" title="Jana dengan AI" class="text-indigo-500 hover:text-indigo-700 flex-shrink-0"><i class="fas fa-robot"></i></button></div></td>
         <td class="p-2 border-b"><button onclick="this.parentElement.parentElement.remove();updatePBil();" class="text-red-400 hover:text-red-600"><i class="fas fa-times"></i></button></td>`;
     tbody.appendChild(row);
     updatePBil();
