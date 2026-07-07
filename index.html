@@ -197,12 +197,13 @@
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border lg:col-span-2">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-sm font-bold text-gray-500 uppercase">Total Aset Mengikut Negeri</h3>
-                            <span class="text-[10px] text-gray-400">Data demo — sekolah tunggal</span>
-                        </div>
-                        <canvas id="chart-negeri" height="140"></canvas>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border">
+                        <h3 class="text-sm font-bold text-gray-500 uppercase mb-4">Total Aset</h3>
+                        <canvas id="chart-total-aset" height="200"></canvas>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border">
+                        <h3 class="text-sm font-bold text-gray-500 uppercase mb-4">Pelupusan</h3>
+                        <canvas id="chart-pelupusan" height="200"></canvas>
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow-sm border">
                         <h3 class="text-sm font-bold text-gray-500 uppercase mb-4">Aset Mengikut Jenis</h3>
@@ -1255,7 +1256,8 @@ let schoolLogoBase64 = localStorage.getItem('disposa_school_logo') || null;
 let assetsList = JSON.parse(localStorage.getItem('disposa_assets_v1')) || [];
 let damageList = JSON.parse(localStorage.getItem('disposa_damage_v1')) || [];
 let usersList = JSON.parse(localStorage.getItem('disposa_users_v1')) || [];
-let negeriChart = null;
+let totalAsetChart = null;
+let pelupusanChart = null;
 let fbApp = null;
 let fbDb = null;
 
@@ -1371,20 +1373,49 @@ function switchTab(tab) {
 
 // ============ DASHBOARD CHART ============
 function initDashboardChart() {
-    const canvas = document.getElementById('chart-negeri');
-    if (!canvas || typeof Chart === 'undefined') return;
-    if (negeriChart) { negeriChart.destroy(); }
-    const labels = ['Wilayah Persekutuan Kuala Lumpur','Johor','Kedah','Kelantan','Melaka','Negeri Sembilan','Pahang','Perak','Perlis','Selangor','Terengganu','Sabah','Pulau Pinang','Sarawak','Wilayah Persekutuan Putrajaya','Wilayah Persekutuan Labuan'];
-    const data = [60000, 460000, 380000, 360000, 360000, 190000, 260000, 340000, 5000, 940000, 190000, 650000, 260000, 700000, 90000, 15000];
-    negeriChart = new Chart(canvas.getContext('2d'), {
-        type: 'bar',
-        data: { labels, datasets: [{ label:'Jumlah Aset', data, backgroundColor:'#e11d48', borderRadius:3 }] },
-        options: {
-            responsive:true,
-            plugins:{ legend:{ display:false } },
-            scales:{ y:{ ticks:{ callback:v => v>=1000?(v/1000)+'k':v } }, x:{ ticks:{ font:{ size:9 } } } }
-        }
-    });
+    if (typeof Chart === 'undefined') return;
+
+    // --- Total Aset: pecahan mengikut kumpulan (Harta Modal vs Aset Alih Bernilai Rendah) ---
+    const totalCanvas = document.getElementById('chart-total-aset');
+    if (totalCanvas) {
+        if (totalAsetChart) { totalAsetChart.destroy(); }
+        const jumlahHartaModal = assetsList.filter(a => a.kumpulan === 'Harta Modal').length;
+        const jumlahInventori = assetsList.filter(a => a.kumpulan === 'Inventori').length;
+        totalAsetChart = new Chart(totalCanvas.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Harta Modal', 'Aset Alih Bernilai Rendah'],
+                datasets: [{ data: [jumlahHartaModal, jumlahInventori], backgroundColor: ['#e11d48', '#10b981'], borderWidth: 0 }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } },
+                cutout: '65%'
+            }
+        });
+    }
+
+    // --- Pelupusan: pecahan mengikut status berkaitan pelupusan ---
+    const pelupusanCanvas = document.getElementById('chart-pelupusan');
+    if (pelupusanCanvas) {
+        if (pelupusanChart) { pelupusanChart.destroy(); }
+        const jumlahBaik = assetsList.filter(a => a.status === 'Baik').length;
+        const jumlahRosak = assetsList.filter(a => a.status === 'Rosak').length;
+        const jumlahCadangLupus = assetsList.filter(a => a.status === 'Cadang Lupus').length;
+        const jumlahDilupuskan = assetsList.filter(a => a.status === 'Dilupuskan').length;
+        pelupusanChart = new Chart(pelupusanCanvas.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Baik', 'Rosak', 'Cadang Lupus', 'Dilupuskan'],
+                datasets: [{ data: [jumlahBaik, jumlahRosak, jumlahCadangLupus, jumlahDilupuskan], backgroundColor: ['#22c55e', '#f59e0b', '#f97316', '#6b7280'], borderRadius: 4 }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+            }
+        });
+    }
 }
 
 // ============ LOGO ============
