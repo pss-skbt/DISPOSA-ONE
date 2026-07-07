@@ -9,6 +9,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -340,6 +342,22 @@
                             </div>
                         </div>
                         <p class="text-[11px] text-gray-400 mt-3"><i class="fas fa-info-circle mr-1"></i>Tetapan ini digunakan secara automatik pada semua surat, borang &amp; sijil yang dijana oleh sistem.</p>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-xl shadow-sm border">
+                        <h3 class="text-lg font-bold mb-2 border-b pb-2 flex items-center text-indigo-900"><i class="fas fa-plug mr-2 text-indigo-600"></i> Segerak Data (Firebase / Aplikasi Android)</h3>
+                        <p class="text-xs text-gray-500 mt-3 mb-4 leading-relaxed">
+                            Konfigurasi SDK Firebase ditetapkan terus dalam kod sumber sistem ini (lihat pembolehubah <code>FIREBASE_CONFIG</code> pada bahagian atas skrip HTML). Butang di bawah menghantar/menarik Daftar Aset, Pendaftaran Guru &amp; Bukan Guru, dan Laporan Kerosakan antara sistem web ini dengan Firestore, supaya Aplikasi Android DISPOSA ONE sentiasa menggunakan data terkini.
+                        </p>
+                        <div class="flex flex-wrap gap-3">
+                            <button onclick="testFirebaseConnection()" class="bg-gray-700 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-gray-800"><i class="fas fa-satellite-dish"></i> Uji Sambungan</button>
+                            <button onclick="syncToFirestore()" class="bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-emerald-700"><i class="fas fa-cloud-upload-alt"></i> Hantar Data Ke Firestore</button>
+                            <button onclick="pullFromFirestore()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-700"><i class="fas fa-cloud-download-alt"></i> Tarik Kemaskini Dari Firestore</button>
+                        </div>
+                        <div id="fb-status-box" class="mt-5 p-4 rounded-xl border text-sm bg-gray-50 text-gray-500">
+                            <i class="fas fa-circle-notch mr-1"></i> Status: Menunggu tindakan.
+                        </div>
+                        <p id="fb-last-sync" class="text-[11px] text-gray-400 mt-4"><i class="fas fa-history mr-1"></i> Penyegerakan terakhir: Tiada lagi.</p>
                     </div>
                 </div>
             </div>
@@ -1238,6 +1256,8 @@ let assetsList = JSON.parse(localStorage.getItem('disposa_assets_v1')) || [];
 let damageList = JSON.parse(localStorage.getItem('disposa_damage_v1')) || [];
 let usersList = JSON.parse(localStorage.getItem('disposa_users_v1')) || [];
 let negeriChart = null;
+let fbApp = null;
+let fbDb = null;
 
 // ============ AUTH ============
 function handleLogin(e) {
@@ -1275,6 +1295,7 @@ window.onload = () => {
     populateAsetDropdown();
     updateJawatanOptions();
     renderUsersTable();
+    updateFbLastSyncDisplay();
     updateStats();
     renderRecords();
     initDashboardChart();
@@ -1960,6 +1981,129 @@ function downloadUsersRegisterPDF() {
     setFont('normal', 8);
     doc.text(`Jumlah Guru: ${usersList.filter(u => u.kategori === 'Guru').length}   |   Jumlah Bukan Guru: ${usersList.filter(u => u.kategori === 'Bukan Guru').length}   |   Jumlah Keseluruhan: ${usersList.length}`, ML, PH - 8);
     doc.save('Senarai_Pengguna_Aplikasi_DISPOSA_ONE.pdf');
+}
+
+// ============================================================
+//  MODUL KONFIGURASI SDK (FIREBASE) & PENYEGERAKAN
+//  --------------------------------------------------------
+//  Isikan nilai firebaseConfig projek anda terus di sini.
+//  Dapatkan nilai ini dari: console.firebase.google.com > Project
+//  Settings > Your apps > SDK setup and configuration.
+//  Aplikasi Android DISPOSA ONE perlu menggunakan Project ID dan
+//  SCHOOL_ID yang SAMA supaya data disegerakkan dengan betul.
+// ============================================================
+const FIREBASE_CONFIG = {
+    apiKey: "GANTI_DENGAN_API_KEY_ANDA",
+    authDomain: "nama-projek.firebaseapp.com",
+    projectId: "nama-projek",
+    storageBucket: "nama-projek.appspot.com",
+    messagingSenderId: "000000000000",
+    appId: "1:000000000000:web:0000000000000000000000",
+    measurementId: "" // pilihan
+};
+const SCHOOL_ID = "SKBT"; // ID sekolah / tenant - samakan dengan Aplikasi Android
+
+function setFbStatus(msg, type) {
+    const box = document.getElementById('fb-status-box');
+    if (!box) return;
+    const styles = {
+        muted: 'bg-gray-50 text-gray-500 border-gray-200',
+        info: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+        success: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        error: 'bg-red-50 text-red-700 border-red-200',
+        loading: 'bg-amber-50 text-amber-700 border-amber-200'
+    };
+    const icons = { muted: 'fa-circle-notch', info: 'fa-info-circle', success: 'fa-check-circle', error: 'fa-exclamation-triangle', loading: 'fa-spinner fa-spin' };
+    box.className = `mt-5 p-4 rounded-xl border text-sm ${styles[type] || styles.muted}`;
+    box.innerHTML = `<i class="fas ${icons[type] || icons.muted} mr-1"></i> ${msg}`;
+}
+function updateFbLastSyncDisplay() {
+    const lastSync = localStorage.getItem('disposa_firebase_last_sync');
+    const lsEl = document.getElementById('fb-last-sync');
+    if (lsEl) lsEl.innerHTML = `<i class="fas fa-history mr-1"></i> Penyegerakan terakhir: ${lastSync ? new Date(lastSync).toLocaleString('ms-MY') : 'Tiada lagi.'}`;
+}
+function initFirebaseIfNeeded() {
+    if (!FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey === 'GANTI_DENGAN_API_KEY_ANDA') {
+        throw new Error('Sila isi FIREBASE_CONFIG dalam kod sumber HTML dengan nilai projek Firebase sebenar anda dahulu.');
+    }
+    if (typeof firebase === 'undefined') throw new Error('SDK Firebase gagal dimuatkan (semak sambungan internet pelayar).');
+    if (!fbApp) {
+        fbApp = firebase.apps && firebase.apps.length ? firebase.app() : firebase.initializeApp(FIREBASE_CONFIG);
+        fbDb = firebase.firestore();
+    }
+    return { db: fbDb, schoolId: SCHOOL_ID };
+}
+async function testFirebaseConnection() {
+    setFbStatus('Menguji sambungan ke Firestore...', 'loading');
+    try {
+        const { db, schoolId } = initFirebaseIfNeeded();
+        const ref = db.collection('schools').doc(schoolId).collection('_meta').doc('connection_test');
+        await ref.set({ pingedAt: new Date().toISOString(), source: 'DISPOSA ONE Web' });
+        const snap = await ref.get();
+        if (snap.exists) {
+            setFbStatus(`Sambungan berjaya! Firestore projek "${FIREBASE_CONFIG.projectId}" (sekolah: ${schoolId}) boleh dibaca dan ditulis.`, 'success');
+        } else {
+            setFbStatus('Sambungan tidak disahkan sepenuhnya — tulis berjaya tetapi bacaan tidak ditemui.', 'error');
+        }
+    } catch (err) {
+        setFbStatus(`Gagal berhubung: ${err.message}`, 'error');
+    }
+}
+async function syncToFirestore() {
+    setFbStatus('Menghantar data ke Firestore...', 'loading');
+    try {
+        const { db, schoolId } = initFirebaseIfNeeded();
+        const base = db.collection('schools').doc(schoolId);
+        const batchOps = [];
+        assetsList.forEach(a => batchOps.push(base.collection('assets').doc(a.no).set(a, { merge: true })));
+        usersList.forEach(u => batchOps.push(base.collection('users').doc(u.id_aplikasi).set(u, { merge: true })));
+        damageList.forEach(d => batchOps.push(base.collection('damage_reports').doc(d.no_laporan).set(d, { merge: true })));
+        await Promise.all(batchOps);
+        const now = new Date().toISOString();
+        localStorage.setItem('disposa_firebase_last_sync', now);
+        updateFbLastSyncDisplay();
+        setFbStatus(`Berjaya menghantar ${assetsList.length} aset, ${usersList.length} pengguna, dan ${damageList.length} laporan kerosakan ke Firestore.`, 'success');
+    } catch (err) {
+        setFbStatus(`Gagal menghantar data: ${err.message}`, 'error');
+    }
+}
+async function pullFromFirestore() {
+    setFbStatus('Menarik kemaskini dari Firestore...', 'loading');
+    try {
+        const { db, schoolId } = initFirebaseIfNeeded();
+        const base = db.collection('schools').doc(schoolId);
+        const [assetSnap, userSnap, damageSnap] = await Promise.all([
+            base.collection('assets').get(),
+            base.collection('users').get(),
+            base.collection('damage_reports').get()
+        ]);
+        let addedDamage = 0;
+        damageSnap.forEach(doc => {
+            const d = doc.data();
+            if (!damageList.some(x => x.no_laporan === d.no_laporan)) { damageList.unshift(d); addedDamage++; }
+        });
+        let addedAssets = 0;
+        assetSnap.forEach(doc => {
+            const a = doc.data();
+            if (!assetsList.some(x => x.no === a.no)) { assetsList.unshift(a); addedAssets++; }
+        });
+        let addedUsers = 0;
+        userSnap.forEach(doc => {
+            const u = doc.data();
+            if (!usersList.some(x => x.id_aplikasi === u.id_aplikasi)) { usersList.unshift(u); addedUsers++; }
+        });
+        localStorage.setItem('disposa_damage_v1', JSON.stringify(damageList));
+        localStorage.setItem('disposa_assets_v1', JSON.stringify(assetsList));
+        localStorage.setItem('disposa_users_v1', JSON.stringify(usersList));
+        renderDamageTable(); renderAssetsTable(); renderUsersTable(); updateStats();
+        const now = new Date().toISOString();
+        localStorage.setItem('disposa_firebase_last_sync', now);
+        const lsEl = document.getElementById('fb-last-sync');
+        if (lsEl) lsEl.innerHTML = `<i class="fas fa-history mr-1"></i> Penyegerakan terakhir: ${new Date(now).toLocaleString('ms-MY')}`;
+        setFbStatus(`Berjaya menarik ${addedAssets} aset baharu, ${addedUsers} pengguna baharu, dan ${addedDamage} laporan kerosakan baharu (cth. dihantar dari Aplikasi Android).`, 'success');
+    } catch (err) {
+        setFbStatus(`Gagal menarik data: ${err.message}`, 'error');
+    }
 }
 
 // ============================================================
