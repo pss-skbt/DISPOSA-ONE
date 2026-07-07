@@ -743,6 +743,8 @@
                 <div class="max-w-6xl mx-auto space-y-6">
                     <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-xl text-[11px] text-indigo-700 leading-relaxed">
                         <i class="fas fa-mobile-alt mr-1"></i> Rekod ini ditarik terus daripada koleksi Firestore <code>reports</code> yang dihantar oleh Guru / Bukan Guru melalui <b>Aplikasi Android DISPOSA ONE</b> (Aplikasi Pintar) — lengkap dengan gambar kerosakan yang dimuat naik. Senarai dikemaskini secara automatik apabila tab ini dibuka.
+                        <br><br>
+                        <i class="fab fa-telegram mr-1"></i> <b>Notifikasi Telegram:</b> Apabila aduan baharu dikesan semasa penarikan data, mesej ringkas akan dihantar automatik ke group/chat Telegram anda (lihat pembolehubah <code>TELEGRAM_CONFIG</code> dalam kod sumber). Klik "Uji Telegram" untuk sahkan sambungan.
                     </div>
 
                     <div class="bg-white p-6 rounded-xl shadow-sm border">
@@ -759,6 +761,7 @@
                                     <option value="Selesai">Selesai</option>
                                 </select>
                                 <span id="aduan-native-count" class="text-xs font-bold text-gray-400 bg-gray-50 px-3 py-1 rounded-full border whitespace-nowrap">0 aduan</span>
+                                <button onclick="testTelegramConnection()" class="flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg text-sm transition-all whitespace-nowrap"><i class="fab fa-telegram"></i> Uji Telegram</button>
                                 <button onclick="printNativeReports()" class="flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-700 hover:bg-gray-800 text-white font-bold rounded-lg text-sm transition-all whitespace-nowrap"><i class="fas fa-print"></i> Cetak</button>
                                 <button onclick="exportNativeReportsData()" class="flex items-center justify-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-sm transition-all whitespace-nowrap"><i class="fas fa-file-export"></i> Export Data</button>
                             </div>
@@ -1505,6 +1508,8 @@ let pelupusanBulanChart = null;
 let lokasiKerosakanChart = null;
 let fbApp = null;
 let fbDb = null;
+// TELEGRAM_CONFIG: isikan { botToken: "...", chatId: "..." } di sini jika mahu aktifkan notifikasi Telegram.
+let TELEGRAM_CONFIG = null;
 
 // ============ AUTH ============
 function handleLogin(e) {
@@ -2272,9 +2277,60 @@ async function pullNativeReports() {
         nativeReportsList = list;
         localStorage.setItem('disposa_native_reports_v1', JSON.stringify(nativeReportsList));
         renderNativeReportsTable();
+        await notifyNewNativeReports(list);
         setNativeSyncStatus(`Berjaya ditarik: ${list.length} aduan dari koleksi "reports" (kemaskini terakhir: ${new Date().toLocaleString('ms-MY')}).`, false);
     } catch (err) {
         setNativeSyncStatus(`Gagal menarik aduan: ${err.message}`, true);
+    }
+}
+
+// ---- Notifikasi Telegram untuk aduan baharu ----
+function isTelegramConfigured() {
+    return !!(TELEGRAM_CONFIG && TELEGRAM_CONFIG.botToken && TELEGRAM_CONFIG.chatId);
+}
+async function sendTelegramMessage(text) {
+    if (!isTelegramConfigured()) throw new Error('TELEGRAM_CONFIG belum diisi dalam kod sumber HTML.');
+    const url = `https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/sendMessage`;
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: TELEGRAM_CONFIG.chatId, text, parse_mode: 'HTML' })
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.description || 'Gagal menghantar mesej Telegram.');
+    return data;
+}
+async function notifyNewNativeReports(currentList) {
+    if (!isTelegramConfigured()) return;
+    const seenIds = JSON.parse(localStorage.getItem('disposa_native_reports_seen_ids') || '[]');
+    const newOnes = currentList.filter(r => !seenIds.includes(r._docId));
+    if (!newOnes.length) return;
+    // Elak banjir notifikasi pada tarikan data pertama kali (semua akan dianggap "baharu")
+    const isFirstEverPull = seenIds.length === 0;
+    if (!isFirstEverPull) {
+        for (const r of newOnes) {
+            const { tarikh, masa } = splitTarikhMasa(r);
+            const msg = `🔧 <b>Aduan Kerosakan Baharu — DISPOSA ONE</b>\n\n`
+                + `👤 Dilaporkan Oleh: ${r.namaGuru}\n`
+                + `🏫 Lokasi: ${r.lokasi}\n`
+                + `📦 Aset: ${r.namaAset}${r.kategoriAset && r.kategoriAset !== '-' ? ' (' + r.kategoriAset + ')' : ''}\n`
+                + `⚠️ Tahap Kerosakan: ${r.tahapKerosakan}\n`
+                + `📝 Keterangan: ${r.keterangan}\n`
+                + `🕐 Tarikh/Masa: ${tarikh} • ${masa}\n\n`
+                + `Sila semak Dashboard Admin DISPOSA ONE untuk butiran penuh.`;
+            try { await sendTelegramMessage(msg); } catch (err) { console.error('Gagal hantar notifikasi Telegram:', err.message); }
+        }
+    }
+    const updatedSeenIds = Array.from(new Set([...seenIds, ...currentList.map(r => r._docId)]));
+    localStorage.setItem('disposa_native_reports_seen_ids', JSON.stringify(updatedSeenIds));
+}
+async function testTelegramConnection() {
+    setNativeSyncStatus('Menguji sambungan Telegram...', false);
+    try {
+        await sendTelegramMessage('✅ Ujian sambungan berjaya! Bot Telegram DISPOSA ONE telah disambungkan dengan betul.');
+        setNativeSyncStatus('Mesej ujian berjaya dihantar ke Telegram. Sila semak group/chat anda.', false);
+    } catch (err) {
+        setNativeSyncStatus(`Gagal menghantar ujian Telegram: ${err.message}`, true);
     }
 }
 function renderNativeReportsTable() {
