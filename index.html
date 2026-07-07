@@ -27,6 +27,7 @@
         .sidebar-submenu.open { max-height: 700px; }
         .sidebar-scroll::-webkit-scrollbar { width:6px; }
         .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius:3px; }
+        .sidebar-collapsed { display:none !important; }
         .stat-card { transition: transform .15s ease, box-shadow .15s ease; }
         .stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,.12); }
     </style>
@@ -67,7 +68,7 @@
 
 <!-- Main App -->
 <div id="main-app" class="hidden flex h-screen overflow-hidden">
-    <aside class="w-64 bg-indigo-900 text-white flex-shrink-0 hidden md:flex flex-col overflow-y-auto sidebar-scroll">
+    <aside id="sidebar-aside" class="w-64 bg-indigo-900 text-white flex-shrink-0 hidden md:flex flex-col overflow-y-auto sidebar-scroll">
         <div class="p-6">
             <h1 class="text-xl font-bold tracking-wider">DISPOSA <span class="text-indigo-300">ONE</span></h1>
             <p class="text-xs text-indigo-300 mt-1 uppercase">Aset • Inventori • Pelupusan</p>
@@ -161,10 +162,9 @@
 
     <main class="flex-1 overflow-y-auto">
         <header class="bg-white shadow-sm border-b px-8 py-4 flex justify-between items-center sticky top-0 z-10">
-            <h2 id="tab-title" class="text-xl font-semibold text-gray-700">Dashboard</h2>
-            <div class="text-right">
-                <div id="current-date" class="text-xs text-gray-500 font-medium"></div>
-                <div id="current-time" class="text-xs text-gray-400 font-semibold mt-0.5"></div>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="text-gray-500 hover:text-indigo-600 text-lg" title="Buka/Tutup Sidebar"><i class="fas fa-bars"></i></button>
+                <h2 id="tab-title" class="text-xl font-semibold text-gray-700">Dashboard</h2>
             </div>
         </header>
 
@@ -199,6 +199,24 @@
                     </div>
                 </div>
 
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+                    <div class="stat-card bg-blue-500 text-white rounded-xl p-6 shadow-md flex flex-col items-center justify-center text-center">
+                        <i class="fas fa-clipboard-list text-2xl mb-2 opacity-90"></i>
+                        <h3 id="stat-aduan-jumlah" class="text-3xl font-bold">0</h3>
+                        <p class="text-xs uppercase font-semibold mt-1 opacity-90">Jumlah Aduan</p>
+                    </div>
+                    <div class="stat-card bg-emerald-600 text-white rounded-xl p-6 shadow-md flex flex-col items-center justify-center text-center">
+                        <i class="fas fa-check-circle text-2xl mb-2 opacity-90"></i>
+                        <h3 id="stat-aduan-selesai" class="text-3xl font-bold">0</h3>
+                        <p class="text-xs uppercase font-semibold mt-1 opacity-90">Jumlah Selesai</p>
+                    </div>
+                    <div class="stat-card bg-amber-500 text-white rounded-xl p-6 shadow-md flex flex-col items-center justify-center text-center">
+                        <i class="fas fa-spinner text-2xl mb-2 opacity-90"></i>
+                        <h3 id="stat-aduan-tindakan" class="text-3xl font-bold">0</h3>
+                        <p class="text-xs uppercase font-semibold mt-1 opacity-90">Dalam Tindakan</p>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                     <div class="bg-white p-6 rounded-xl shadow-sm border">
                         <h3 class="text-sm font-bold text-gray-500 uppercase mb-4">Total Aset</h3>
@@ -209,8 +227,19 @@
                         <canvas id="chart-pelupusan" height="200"></canvas>
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow-sm border">
-                        <h3 class="text-sm font-bold text-gray-500 uppercase mb-4">Aset Mengikut Jenis</h3>
+                        <h3 class="text-sm font-bold text-gray-500 uppercase mb-4">Aset Mengikut Jenis (Kategori Aset)</h3>
                         <div id="kategori-chart"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border">
+                        <h3 class="text-sm font-bold text-gray-500 uppercase mb-4">Pelupusan Mengikut Bulan</h3>
+                        <canvas id="chart-pelupusan-bulan" height="180"></canvas>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border">
+                        <h3 class="text-sm font-bold text-gray-500 uppercase mb-4">Carta Lokasi Kerosakan</h3>
+                        <canvas id="chart-lokasi-kerosakan" height="180"></canvas>
                     </div>
                 </div>
 
@@ -1282,6 +1311,8 @@ let damageList = JSON.parse(localStorage.getItem('disposa_damage_v1')) || [];
 let usersList = JSON.parse(localStorage.getItem('disposa_users_v1')) || [];
 let totalAsetChart = null;
 let pelupusanChart = null;
+let pelupusanBulanChart = null;
+let lokasiKerosakanChart = null;
 let fbApp = null;
 let fbDb = null;
 
@@ -1303,12 +1334,12 @@ function handleLogout() { sessionStorage.removeItem('isLoggedIn'); location.relo
 
 function updateHeaderClock() {
     const now = new Date();
-    const dateEl = document.getElementById('current-date');
-    const timeEl = document.getElementById('current-time');
-    if (dateEl) dateEl.innerText = new Intl.DateTimeFormat('ms-MY', { dateStyle: 'full' }).format(now);
-    if (timeEl) timeEl.innerText = now.toLocaleTimeString('en-US');
     const welcomeEl = document.getElementById('welcome-datetime');
     if (welcomeEl) welcomeEl.innerText = new Intl.DateTimeFormat('en-GB', { day:'2-digit', month:'2-digit', year:'numeric' }).format(now) + ' ' + now.toLocaleTimeString('en-US');
+}
+function toggleSidebar() {
+    const aside = document.getElementById('sidebar-aside');
+    if (aside) aside.classList.toggle('sidebar-collapsed');
 }
 
 window.onload = () => {
@@ -1447,6 +1478,60 @@ function initDashboardChart() {
                 responsive: true,
                 plugins: { legend: { display: false } },
                 scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+            }
+        });
+    }
+
+    // --- Pelupusan Mengikut Bulan: bilangan rekod pelupusan disimpan setiap bulan (6 bulan terkini) ---
+    const bulanCanvas = document.getElementById('chart-pelupusan-bulan');
+    if (bulanCanvas) {
+        if (pelupusanBulanChart) { pelupusanBulanChart.destroy(); }
+        const namaBulan = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
+        const now = new Date();
+        const bulanLabels = [];
+        const bulanKeys = [];
+        for (let i = 5; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            bulanLabels.push(`${namaBulan[d.getMonth()]} ${d.getFullYear()}`);
+            bulanKeys.push(`${d.getFullYear()}-${d.getMonth()}`);
+        }
+        const bulanData = bulanKeys.map(key => {
+            const [yr, mo] = key.split('-').map(Number);
+            return records.filter(r => {
+                const rd = new Date(r.id);
+                return rd.getFullYear() === yr && rd.getMonth() === mo;
+            }).length;
+        });
+        pelupusanBulanChart = new Chart(bulanCanvas.getContext('2d'), {
+            type: 'bar',
+            data: { labels: bulanLabels, datasets: [{ label: 'Rekod Pelupusan', data: bulanData, backgroundColor: '#6366f1', borderRadius: 4 }] },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { ticks: { font: { size: 9 } } } }
+            }
+        });
+    }
+
+    // --- Carta Lokasi Kerosakan: bilangan laporan kerosakan mengikut lokasi ---
+    const lokasiCanvas = document.getElementById('chart-lokasi-kerosakan');
+    if (lokasiCanvas) {
+        if (lokasiKerosakanChart) { lokasiKerosakanChart.destroy(); }
+        const groups = {};
+        damageList.forEach(d => { const k = d.lokasi && d.lokasi.trim() ? d.lokasi.trim() : 'Tidak Dinyatakan'; groups[k] = (groups[k] || 0) + 1; });
+        const lokasiLabels = Object.keys(groups);
+        const lokasiData = Object.values(groups);
+        const palette = ['#e11d48','#f59e0b','#10b981','#6366f1','#0ea5e9','#a855f7','#f97316','#84cc16'];
+        lokasiKerosakanChart = new Chart(lokasiCanvas.getContext('2d'), {
+            type: lokasiLabels.length ? 'doughnut' : 'bar',
+            data: {
+                labels: lokasiLabels.length ? lokasiLabels : ['Tiada Data'],
+                datasets: [{ data: lokasiData.length ? lokasiData : [0], backgroundColor: lokasiLabels.map((_, i) => palette[i % palette.length]), borderWidth: 0 }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9 } } } },
+                cutout: '55%'
             }
         });
     }
@@ -2094,13 +2179,13 @@ function downloadUsersRegisterPDF() {
 //  SCHOOL_ID yang SAMA supaya data disegerakkan dengan betul.
 // ============================================================
 const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyAAo-UK674n5jB_fVyTe0IcziPtQQx3_44",
-    authDomain: "disposa-one.firebaseapp.com",
-    projectId: "disposa-one",
-    storageBucket: "disposa-one.firebasestorage.app",
-    messagingSenderId: "970458399440",
-    appId: "1:970458399440:web:24b43fae7b0d29141554d5",
-    measurementId: "G-3BS1CGRK78" // pilihan
+    apiKey: "GANTI_DENGAN_API_KEY_ANDA",
+    authDomain: "nama-projek.firebaseapp.com",
+    projectId: "nama-projek",
+    storageBucket: "nama-projek.appspot.com",
+    messagingSenderId: "000000000000",
+    appId: "1:000000000000:web:0000000000000000000000",
+    measurementId: "" // pilihan
 };
 const SCHOOL_ID = "SKBT"; // ID sekolah / tenant - samakan dengan Aplikasi Android
 
@@ -2265,6 +2350,9 @@ function updateStats() {
     const elLebihan = document.getElementById('stat-aset-lebihan'); if (elLebihan) elLebihan.innerText = assetsList.filter(a => a.status === 'Lebihan').length;
     const elRosak = document.getElementById('stat-rosak'); if (elRosak) elRosak.innerText = assetsList.filter(a => a.status === 'Rosak' || a.status === 'Cadang Lupus').length;
     const elDilupus = document.getElementById('stat-dilupus'); if (elDilupus) elDilupus.innerText = assetsList.filter(a => a.status === 'Dilupuskan').length;
+    const elAduanJumlah = document.getElementById('stat-aduan-jumlah'); if (elAduanJumlah) elAduanJumlah.innerText = damageList.length;
+    const elAduanSelesai = document.getElementById('stat-aduan-selesai'); if (elAduanSelesai) elAduanSelesai.innerText = damageList.filter(d => d.status === 'Selesai').length;
+    const elAduanTindakan = document.getElementById('stat-aduan-tindakan'); if (elAduanTindakan) elAduanTindakan.innerText = damageList.filter(d => d.status === 'Dalam Tindakan').length;
     renderKategoriChart();
 }
 function renderKategoriChart() {
