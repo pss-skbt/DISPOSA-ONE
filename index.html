@@ -8,6 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -17,6 +18,15 @@
         .logo-preview-box { width:120px;height:120px;border:2px dashed #cbd5e1;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#f8fafc; }
         .logo-preview-box img { max-width:100%;max-height:100%;object-fit:contain; }
         .nav-group-label { font-size:10px;font-weight:800;color:#a5b4fc;text-transform:uppercase;letter-spacing:0.08em;padding:16px 24px 4px; }
+        .sidebar-group-header { cursor:pointer; user-select:none; }
+        .sidebar-group-header .chevron { transition: transform 0.2s ease; }
+        .sidebar-group-header.open .chevron { transform: rotate(180deg); }
+        .sidebar-submenu { max-height:0; overflow:hidden; transition: max-height 0.25s ease; }
+        .sidebar-submenu.open { max-height: 700px; }
+        .sidebar-scroll::-webkit-scrollbar { width:6px; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius:3px; }
+        .stat-card { transition: transform .15s ease, box-shadow .15s ease; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,.12); }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -55,7 +65,7 @@
 
 <!-- Main App -->
 <div id="main-app" class="hidden flex h-screen overflow-hidden">
-    <aside class="w-64 bg-indigo-900 text-white flex-shrink-0 hidden md:flex flex-col overflow-y-auto">
+    <aside class="w-64 bg-indigo-900 text-white flex-shrink-0 hidden md:flex flex-col overflow-y-auto sidebar-scroll">
         <div class="p-6">
             <h1 class="text-xl font-bold tracking-wider">DISPOSA <span class="text-indigo-300">ONE</span></h1>
             <p class="text-xs text-indigo-300 mt-1 uppercase">Aset • Inventori • Pelupusan</p>
@@ -68,8 +78,46 @@
 
             <div class="nav-group-label">Aset &amp; Inventori</div>
             <button onclick="switchTab('tetapan')" id="btn-tetapan" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-cog mr-3 w-4"></i> Tetapan Sekolah</button>
+
+            <div>
+                <div class="sidebar-group-header sidebar-item flex items-center justify-between px-6 py-3" onclick="toggleGroup('grp-pendaftaran')">
+                    <span class="flex items-center"><i class="fas fa-box-open mr-3 w-4"></i> Pendaftaran Aset</span>
+                    <i class="fas fa-chevron-down text-xs chevron"></i>
+                </div>
+                <div id="grp-pendaftaran" class="sidebar-submenu">
+                    <button onclick="switchTab('aset-manual')" id="btn-aset-manual" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-sm transition-colors"><i class="fas fa-keyboard mr-3 w-4"></i> Manual</button>
+                    <button onclick="switchTab('aset-pukal')" id="btn-aset-pukal" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-sm transition-colors"><i class="fas fa-layer-group mr-3 w-4"></i> Pukal</button>
+                </div>
+            </div>
+
             <button onclick="switchTab('aset')" id="btn-aset" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-boxes mr-3 w-4"></i> Daftar Aset</button>
+            <button onclick="switchTab('status-pengesahan')" id="btn-status-pengesahan" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-clipboard-check mr-3 w-4"></i> Status Pengesahan Aset</button>
+            <button onclick="switchTab('kemaskini-pukal')" id="btn-kemaskini-pukal" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-sync-alt mr-3 w-4"></i> Kemaskini Aset (Pukal)</button>
+            <button onclick="switchTab('status-pemadanan')" id="btn-status-pemadanan" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-map-marker-alt mr-3 w-4"></i> Status Pemadanan Aset</button>
             <button onclick="switchTab('kerosakan')" id="btn-kerosakan" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-tools mr-3 w-4"></i> Laporan Kerosakan</button>
+
+            <div>
+                <div class="sidebar-group-header sidebar-item flex items-center justify-between px-6 py-3" onclick="toggleGroup('grp-senarai')">
+                    <span class="flex items-center"><i class="fas fa-clipboard-list mr-3 w-4"></i> Senarai Aset</span>
+                    <i class="fas fa-chevron-down text-xs chevron"></i>
+                </div>
+                <div id="grp-senarai" class="sidebar-submenu">
+                    <button onclick="switchTab('harta-modal')" id="btn-harta-modal" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-sm transition-colors"><i class="fas fa-warehouse mr-3 w-4"></i> Harta Modal</button>
+                    <button onclick="switchTab('aset-rendah')" id="btn-aset-rendah" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-sm transition-colors"><i class="fas fa-box mr-3 w-4"></i> Aset Alih Bernilai Rendah</button>
+                </div>
+            </div>
+
+            <div>
+                <div class="sidebar-group-header sidebar-item flex items-center justify-between px-6 py-3" onclick="toggleGroup('grp-pentadbiran')">
+                    <span class="flex items-center"><i class="fas fa-cogs mr-3 w-4"></i> Pentadbiran</span>
+                    <i class="fas fa-chevron-down text-xs chevron"></i>
+                </div>
+                <div id="grp-pentadbiran" class="sidebar-submenu">
+                    <button onclick="switchTab('pengurusan-lokasi')" id="btn-pengurusan-lokasi" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-sm transition-colors"><i class="fas fa-map mr-3 w-4"></i> Pengurusan Lokasi</button>
+                </div>
+            </div>
+
+            <div class="nav-group-label">Pelupusan Aset (KEW.PA)</div>
             <button onclick="switchTab('pelupusan')" id="btn-pelupusan" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-file-invoice mr-3 w-4"></i> Pelupusan Aset (KEW.PA-14)</button>
             <button onclick="switchTab('perakuan')" id="btn-perakuan" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-stamp mr-3 w-4"></i> Perakuan Pelupusan (KEW.PA-16)</button>
 
@@ -78,6 +126,28 @@
             <button onclick="switchTab('borang')" id="btn-borang" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-file-alt mr-3 w-4"></i> Borang 9/08</button>
             <button onclick="switchTab('borang2')" id="btn-borang2" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-file-signature mr-3 w-4"></i> Borang 2/08</button>
             <button onclick="switchTab('borang12')" id="btn-borang12" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-check-double mr-3 w-4"></i> Borang 12/08</button>
+
+            <div>
+                <div class="sidebar-group-header sidebar-item flex items-center justify-between px-6 py-3" onclick="toggleGroup('grp-laporan')">
+                    <span class="flex items-center"><i class="fas fa-chart-bar mr-3 w-4"></i> Laporan</span>
+                    <i class="fas fa-chevron-down text-xs chevron"></i>
+                </div>
+                <div id="grp-laporan" class="sidebar-submenu">
+                    <button onclick="switchTab('rpt-pa3')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>KEW.PA-3<br><span class="text-[11px] opacity-80">Daftar Harta Modal</span></span></button>
+                    <button onclick="switchTab('rpt-pa4')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>KEW.PA-4<br><span class="text-[11px] opacity-80">Daftar Aset Alih Bernilai Rendah</span></span></button>
+                    <button onclick="switchTab('rpt-pa5')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>KEW.PA-5<br><span class="text-[11px] opacity-80">Senarai Daftar Harta Modal</span></span></button>
+                    <button onclick="switchTab('rpt-pa6')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>KEW.PA-6<br><span class="text-[11px] opacity-80">Senarai Daftar Aset Alih Bernilai Rendah</span></span></button>
+                    <button onclick="switchTab('rpt-pa7')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>KEW.PA-7<br><span class="text-[11px] opacity-80">Senarai Aset Alih</span></span></button>
+                    <button onclick="switchTab('rpt-pa8')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>KEW.PA-8<br><span class="text-[11px] opacity-80">Laporan Kedudukan Semasa Aset Alih</span></span></button>
+                    <button onclick="switchTab('rpt-sukuan')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Laporan Kedudukan Aset Semasa (Sukuan Tahun)</span></button>
+                    <button onclick="switchTab('rpt-pa11')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>KEW.PA-11<br><span class="text-[11px] opacity-80">Borang Pemeriksaan Aset</span></span></button>
+                    <button onclick="switchTab('aduan')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Aduan Sistem</span></button>
+                    <button onclick="switchTab('manual')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Manual Pengguna</span></button>
+                </div>
+            </div>
+
+            <div class="nav-group-label">Aplikasi Mudah Alih (Android) <span class="text-emerald-400">(Baharu)</span></div>
+            <button onclick="switchTab('pengguna')" id="btn-pengguna" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-user-plus mr-3 w-4"></i> Pendaftaran Guru &amp; Bukan Guru</button>
 
             <div class="nav-group-label">Rekod</div>
             <button onclick="switchTab('list')" id="btn-list" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-list mr-3 w-4"></i> Senarai Rekod</button>
@@ -96,11 +166,49 @@
         <div class="p-8">
             <!-- ===================== DASHBOARD ===================== -->
             <div id="view-dashboard">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border">
-                        <p class="text-sm text-gray-500 font-medium uppercase">Jumlah Aset Didaftar</p>
-                        <h3 id="stat-aset" class="text-3xl font-bold mt-1 text-indigo-600">0</h3>
+                <div class="rounded-2xl bg-gradient-to-r from-cyan-600 to-teal-500 text-white p-8 mb-6 shadow-lg">
+                    <h3 class="text-2xl font-bold">Selamat Datang!</h3>
+                    <p id="welcome-datetime" class="text-white/80 text-sm mt-1"></p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
+                    <div class="stat-card bg-red-500 text-white rounded-xl p-6 shadow-md flex flex-col items-center justify-center text-center">
+                        <i class="fas fa-arrow-up text-2xl mb-2 opacity-90"></i>
+                        <h3 id="stat-harta-modal" class="text-3xl font-bold">0</h3>
+                        <p class="text-xs uppercase font-semibold mt-1 opacity-90">Jumlah Harta Modal</p>
                     </div>
+                    <div class="stat-card bg-emerald-500 text-white rounded-xl p-6 shadow-md flex flex-col items-center justify-center text-center">
+                        <i class="fas fa-arrow-down text-2xl mb-2 opacity-90"></i>
+                        <h3 id="stat-aset-rendah" class="text-3xl font-bold">0</h3>
+                        <p class="text-xs uppercase font-semibold mt-1 opacity-90">Jumlah Aset Alih Bernilai Rendah</p>
+                    </div>
+                    <div class="stat-card bg-amber-500 text-white rounded-xl p-6 shadow-md flex flex-col items-center justify-center text-center">
+                        <i class="fas fa-archive text-2xl mb-2 opacity-90"></i>
+                        <h3 id="stat-aset" class="text-3xl font-bold">0</h3>
+                        <p class="text-xs uppercase font-semibold mt-1 opacity-90">Jumlah Aset</p>
+                    </div>
+                    <div class="stat-card bg-indigo-700 text-white rounded-xl p-6 shadow-md flex flex-col items-center justify-center text-center">
+                        <i class="fas fa-boxes text-2xl mb-2 opacity-90"></i>
+                        <h3 id="stat-aset-lebihan" class="text-3xl font-bold">0</h3>
+                        <p class="text-xs uppercase font-semibold mt-1 opacity-90">Jumlah Aset Lebihan</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border lg:col-span-2">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-bold text-gray-500 uppercase">Total Aset Mengikut Negeri</h3>
+                            <span class="text-[10px] text-gray-400">Data demo — sekolah tunggal</span>
+                        </div>
+                        <canvas id="chart-negeri" height="140"></canvas>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border">
+                        <h3 class="text-sm font-bold text-gray-500 uppercase mb-4">Aset Mengikut Jenis</h3>
+                        <div id="kategori-chart"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
                     <div class="bg-white p-6 rounded-xl shadow-sm border">
                         <p class="text-sm text-gray-500 font-medium uppercase">Rosak / Cadang Lupus</p>
                         <h3 id="stat-rosak" class="text-3xl font-bold mt-1 text-amber-500">0</h3>
@@ -113,18 +221,13 @@
                         <p class="text-sm text-gray-500 font-medium uppercase">Jumlah Rekod Disimpan</p>
                         <h3 id="stat-total" class="text-3xl font-bold mt-1">0</h3>
                     </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border md:col-span-2">
-                        <h3 class="text-sm font-bold text-gray-500 uppercase mb-4">Aset Mengikut Jenis</h3>
-                        <div id="kategori-chart"></div>
-                    </div>
                     <div class="bg-white p-6 rounded-xl shadow-sm border flex flex-col justify-center items-center text-center">
                         <p class="text-sm text-gray-500 font-medium uppercase">Status Sistem</p>
-                        <h3 class="text-3xl font-bold mt-1 text-green-500">AKTIF</h3>
-                        <p class="text-xs text-gray-400 mt-3">DISPOSA ONE v1.1 — KIK Kebangsaan</p>
+                        <h3 class="text-2xl font-bold mt-1 text-green-500">AKTIF</h3>
+                        <p class="text-[10px] text-gray-400 mt-2">DISPOSA ONE v1.2</p>
                     </div>
                 </div>
+
                 <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 text-white p-6 rounded-xl shadow-sm border">
                     <div class="flex justify-between items-start mb-3">
                         <div>
@@ -241,6 +344,26 @@
                 </div>
             </div>
 
+            <!-- Placeholder module views (baharu, mengikut struktur menu rujukan) -->
+            <div id="view-aset-manual" class="hidden">MODULE_PLACEHOLDER::Pendaftaran Aset (Manual)::Sudah tersedia di tab "Daftar Aset" — gunakan borang "Daftar / Kemaskini Aset" untuk daftar satu-satu.::fa-keyboard</div>
+            <div id="view-aset-pukal" class="hidden">MODULE_PLACEHOLDER::Pendaftaran Aset (Pukal)::Sudah tersedia di tab "Daftar Aset" — gunakan "Import Data Aset Automatik" (CSV / Google Sheets) untuk daftar pukal.::fa-layer-group</div>
+            <div id="view-status-pengesahan" class="hidden">MODULE_PLACEHOLDER::Status Pengesahan Aset::Semak status pengesahan pendaftaran aset yang telah dihantar.::fa-clipboard-check</div>
+            <div id="view-kemaskini-pukal" class="hidden">MODULE_PLACEHOLDER::Kemaskini Aset (Pukal)::Kemaskini maklumat berbilang rekod aset secara pukal.::fa-sync-alt</div>
+            <div id="view-status-pemadanan" class="hidden">MODULE_PLACEHOLDER::Status Pemadanan Aset::Semak status padanan lokasi/label QR aset di setiap ruang.::fa-map-marker-alt</div>
+            <div id="view-harta-modal" class="hidden">MODULE_PLACEHOLDER::Senarai Aset - Harta Modal::Senarai aset berkumpulan "Harta Modal" (nilai perolehan ≥ RM2,000). Lihat di tab "Daftar Aset" dan tapis mengikut kumpulan.::fa-warehouse</div>
+            <div id="view-aset-rendah" class="hidden">MODULE_PLACEHOLDER::Senarai Aset - Bernilai Rendah::Senarai aset berkumpulan "Inventori" (nilai perolehan &lt; RM2,000). Lihat di tab "Daftar Aset" dan tapis mengikut kumpulan.::fa-box</div>
+            <div id="view-pengurusan-lokasi" class="hidden">MODULE_PLACEHOLDER::Pentadbiran - Pengurusan Lokasi::Urus senarai lokasi/bilik penempatan aset sekolah.::fa-map</div>
+            <div id="view-rpt-pa3" class="hidden">MODULE_PLACEHOLDER::KEW.PA-3 — Daftar Harta Modal::Jana laporan rasmi Daftar Harta Modal.::fa-file-invoice</div>
+            <div id="view-rpt-pa4" class="hidden">MODULE_PLACEHOLDER::KEW.PA-4 — Daftar Aset Alih Bernilai Rendah::Jana laporan rasmi Daftar Aset Alih Bernilai Rendah.::fa-file-invoice</div>
+            <div id="view-rpt-pa5" class="hidden">MODULE_PLACEHOLDER::KEW.PA-5 — Senarai Daftar Harta Modal::Jana senarai ringkas Daftar Harta Modal.::fa-file-invoice</div>
+            <div id="view-rpt-pa6" class="hidden">MODULE_PLACEHOLDER::KEW.PA-6 — Senarai Daftar Aset Alih Bernilai Rendah::Jana senarai ringkas Aset Alih Bernilai Rendah.::fa-file-invoice</div>
+            <div id="view-rpt-pa7" class="hidden">MODULE_PLACEHOLDER::KEW.PA-7 — Senarai Aset Alih::Jana senarai penuh Aset Alih. Boleh juga muat turun terus dari tab "Daftar Aset".::fa-file-invoice</div>
+            <div id="view-rpt-pa8" class="hidden">MODULE_PLACEHOLDER::KEW.PA-8 — Laporan Kedudukan Semasa Aset Alih::Jana laporan kedudukan semasa aset alih.::fa-file-invoice</div>
+            <div id="view-rpt-sukuan" class="hidden">MODULE_PLACEHOLDER::Laporan Kedudukan Aset Semasa (Sukuan Tahun)::Jana laporan suku tahunan kedudukan aset.::fa-calendar-alt</div>
+            <div id="view-rpt-pa11" class="hidden">MODULE_PLACEHOLDER::KEW.PA-11 — Borang Pemeriksaan Aset::Jana Borang Pemeriksaan Aset rasmi.::fa-file-invoice</div>
+            <div id="view-aduan" class="hidden">MODULE_PLACEHOLDER::Aduan Sistem::Hantar atau semak status aduan berkaitan sistem.::fa-comment-dots</div>
+            <div id="view-manual" class="hidden">MODULE_PLACEHOLDER::Manual Pengguna::Muat turun panduan penggunaan sistem DISPOSA ONE.::fa-book</div>
+
             <!-- ===================== DAFTAR ASET ===================== -->
             <div id="view-aset" class="hidden">
                 <div class="max-w-6xl mx-auto space-y-6">
@@ -321,7 +444,7 @@
                             <div>
                                 <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Status Aset</label>
                                 <select id="a_status" class="w-full p-3 bg-gray-50 border rounded-lg text-sm">
-                                    <option>Baik</option><option>Rosak</option><option>Cadang Lupus</option><option>Dilupuskan</option>
+                                    <option>Baik</option><option>Rosak</option><option>Cadang Lupus</option><option>Dilupuskan</option><option>Lebihan</option>
                                 </select>
                             </div>
                             <div class="md:col-span-3">
@@ -338,7 +461,12 @@
                     <div class="bg-white p-8 rounded-xl shadow-sm border">
                         <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
                             <h3 class="text-xl font-bold text-indigo-900">Senarai Daftar Aset &amp; Inventori</h3>
-                            <div class="flex gap-2 items-center">
+                            <div class="flex gap-2 items-center flex-wrap">
+                                <select id="aset-filter-kumpulan" onchange="renderAssetsTable()" class="p-2 border rounded-lg text-sm">
+                                    <option value="">Semua Kumpulan</option>
+                                    <option value="Harta Modal">Harta Modal</option>
+                                    <option value="Inventori">Aset Alih Bernilai Rendah (Inventori)</option>
+                                </select>
                                 <input type="text" id="aset-search" oninput="renderAssetsTable()" placeholder="Cari nama / no. / lokasi / status..." class="p-2 border rounded-lg text-sm w-64">
                                 <span id="aset-count" class="text-xs font-bold text-gray-400 bg-gray-50 px-3 py-1 rounded-full border whitespace-nowrap">0 aset</span>
                             </div>
@@ -950,6 +1078,139 @@
                 </div>
             </div>
 
+            <!-- ===================== PENDAFTARAN GURU & BUKAN GURU (APLIKASI ANDROID) ===================== -->
+            <div id="view-pengguna" class="hidden">
+                <div class="max-w-6xl mx-auto space-y-6">
+                    <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-xl text-[11px] text-indigo-700">
+                        <i class="fas fa-mobile-alt mr-1"></i> Daftarkan Guru dan Bukan Guru (kakitangan sokongan) di sini untuk membolehkan mereka log masuk ke <b>Aplikasi Android DISPOSA ONE</b> (contohnya untuk mengimbas label QR aset, melapor kerosakan, dan menyemak status aset di lapangan). Setiap pengguna akan diberi <b>ID Aplikasi</b> dan kod QR log masuk yang unik.
+                    </div>
+
+                    <div class="bg-white p-8 rounded-xl shadow-sm border">
+                        <h3 class="text-lg font-bold mb-6 border-b pb-2 text-indigo-900 flex items-center"><i class="fas fa-user-plus mr-2 text-indigo-600"></i> Daftar / Kemaskini Pengguna Aplikasi</h3>
+                        <input type="hidden" id="u_edit_index" value="">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div class="md:col-span-2">
+                                <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Nama Penuh</label>
+                                <input type="text" id="u_nama" class="w-full p-3 bg-gray-50 border rounded-lg text-sm" placeholder="Contoh: Ahmad bin Ismail">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">No. Kad Pengenalan</label>
+                                <input type="text" id="u_no_kp" class="w-full p-3 bg-gray-50 border rounded-lg text-sm" placeholder="Contoh: 800101-01-1234">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Kategori Pengguna</label>
+                                <select id="u_kategori" onchange="updateJawatanOptions()" class="w-full p-3 bg-gray-50 border rounded-lg text-sm font-bold">
+                                    <option value="Guru">Guru</option>
+                                    <option value="Bukan Guru">Bukan Guru (Kakitangan Sokongan)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Jawatan / Gred</label>
+                                <select id="u_jawatan" class="w-full p-3 bg-gray-50 border rounded-lg text-sm"></select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">No. Telefon Bimbit</label>
+                                <input type="text" id="u_telefon" class="w-full p-3 bg-gray-50 border rounded-lg text-sm" placeholder="Contoh: 012-3456789">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">E-mel</label>
+                                <input type="email" id="u_emel" class="w-full p-3 bg-gray-50 border rounded-lg text-sm" placeholder="nama@moe.edu.my">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Lokasi / Bilik Bertugas</label>
+                                <input type="text" id="u_lokasi" class="w-full p-3 bg-gray-50 border rounded-lg text-sm" placeholder="Contoh: Bilik PSS">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Peranan Dalam Aplikasi</label>
+                                <select id="u_peranan" class="w-full p-3 bg-gray-50 border rounded-lg text-sm">
+                                    <option>Pelapor Kerosakan</option>
+                                    <option>Pegawai Aset Lokasi</option>
+                                    <option>Penyemak / Juruaudit</option>
+                                    <option>Pentadbir Aplikasi</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Status Akaun</label>
+                                <select id="u_status" class="w-full p-3 bg-gray-50 border rounded-lg text-sm">
+                                    <option>Aktif</option><option>Tidak Aktif</option><option>Menunggu Pengesahan</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex justify-end gap-3">
+                            <button onclick="clearUserForm()" class="px-6 py-3 rounded-xl font-bold text-gray-500 border hover:bg-gray-50">Kosongkan</button>
+                            <button onclick="addUser()" class="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-indigo-700"><i class="fas fa-save"></i> Simpan Pengguna</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-xl shadow-sm border">
+                        <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
+                            <h3 class="text-xl font-bold text-indigo-900">Senarai Pengguna Berdaftar (Aplikasi Android)</h3>
+                            <div class="flex gap-2 items-center flex-wrap">
+                                <select id="pengguna-filter-kategori" onchange="renderUsersTable()" class="p-2 border rounded-lg text-sm">
+                                    <option value="">Semua Kategori</option>
+                                    <option value="Guru">Guru</option>
+                                    <option value="Bukan Guru">Bukan Guru</option>
+                                </select>
+                                <input type="text" id="pengguna-search" oninput="renderUsersTable()" placeholder="Cari nama / ID / jawatan..." class="p-2 border rounded-lg text-sm w-64">
+                                <span id="pengguna-count" class="text-xs font-bold text-gray-400 bg-gray-50 px-3 py-1 rounded-full border whitespace-nowrap">0 pengguna</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-center">
+                                <p class="text-[10px] font-bold text-indigo-400 uppercase">Jumlah Guru</p>
+                                <h4 id="stat-pengguna-guru" class="text-2xl font-bold text-indigo-700 mt-1">0</h4>
+                            </div>
+                            <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4 text-center">
+                                <p class="text-[10px] font-bold text-emerald-500 uppercase">Jumlah Bukan Guru</p>
+                                <h4 id="stat-pengguna-bukanguru" class="text-2xl font-bold text-emerald-700 mt-1">0</h4>
+                            </div>
+                            <div class="bg-gray-50 border rounded-xl p-4 text-center">
+                                <p class="text-[10px] font-bold text-gray-400 uppercase">Jumlah Keseluruhan</p>
+                                <h4 id="stat-pengguna-jumlah" class="text-2xl font-bold text-gray-700 mt-1">0</h4>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto border rounded-xl mb-4">
+                            <table class="w-full text-sm">
+                                <thead class="bg-gray-100 uppercase text-[10px]">
+                                    <tr>
+                                        <th class="p-3 border-b text-left">ID Aplikasi</th>
+                                        <th class="p-3 border-b text-left">Nama</th>
+                                        <th class="p-3 border-b text-left">Kategori</th>
+                                        <th class="p-3 border-b text-left">Jawatan</th>
+                                        <th class="p-3 border-b text-left">Peranan</th>
+                                        <th class="p-3 border-b text-left">Telefon</th>
+                                        <th class="p-3 border-b text-left">Status</th>
+                                        <th class="p-3 border-b text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pengguna-tbody"></tbody>
+                            </table>
+                        </div>
+                        <div class="flex justify-end">
+                            <button onclick="downloadUsersRegisterPDF()" class="bg-red-600 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-red-700"><i class="fas fa-file-pdf"></i> Muat Turun Senarai Pengguna (PDF)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== QR LOG MASUK APLIKASI MODAL ===================== -->
+            <div id="user-qr-modal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+                <div class="bg-white rounded-2xl p-6 w-80 shadow-2xl">
+                    <h4 class="font-bold text-center text-indigo-900 mb-4">Kod Log Masuk Aplikasi</h4>
+                    <div class="border-2 border-dashed rounded-xl p-4 text-center">
+                        <div id="user-qrcode-box" class="flex justify-center mb-2"></div>
+                        <p id="user-qr-nama" class="text-sm font-bold"></p>
+                        <p id="user-qr-id" class="text-xs text-indigo-600 font-semibold"></p>
+                        <p id="user-qr-jawatan" class="text-[11px] text-gray-400"></p>
+                    </div>
+                    <p class="text-[10px] text-gray-400 mt-3 text-center"><i class="fas fa-info-circle mr-1"></i>Imbas kod ini dalam Aplikasi Android DISPOSA ONE untuk log masuk.</p>
+                    <div class="flex gap-2 mt-4">
+                        <button onclick="closeUserQrModal()" class="flex-1 py-2 rounded-lg border font-bold text-gray-500 hover:bg-gray-50">Tutup</button>
+                        <button onclick="printUserQr()" class="flex-1 py-2 rounded-lg bg-indigo-600 text-white font-bold hover:bg-indigo-700"><i class="fas fa-print mr-1"></i> Cetak</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Senarai Rekod -->
             <div id="view-list" class="hidden">
                 <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
@@ -975,6 +1236,8 @@ let records = JSON.parse(localStorage.getItem('disposa_records_v1')) || [];
 let schoolLogoBase64 = localStorage.getItem('disposa_school_logo') || null;
 let assetsList = JSON.parse(localStorage.getItem('disposa_assets_v1')) || [];
 let damageList = JSON.parse(localStorage.getItem('disposa_damage_v1')) || [];
+let usersList = JSON.parse(localStorage.getItem('disposa_users_v1')) || [];
+let negeriChart = null;
 
 // ============ AUTH ============
 function handleLogin(e) {
@@ -985,6 +1248,7 @@ function handleLogin(e) {
         sessionStorage.setItem('isLoggedIn', 'true');
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('main-app').classList.remove('hidden');
+        setTimeout(initDashboardChart, 50);
     } else {
         document.getElementById('login-error').classList.remove('hidden');
     }
@@ -997,6 +1261,8 @@ window.onload = () => {
         document.getElementById('main-app').classList.remove('hidden');
     }
     document.getElementById('current-date').innerText = new Intl.DateTimeFormat('ms-MY', { dateStyle: 'full' }).format(new Date());
+    const welcomeEl = document.getElementById('welcome-datetime');
+    if (welcomeEl) welcomeEl.innerText = new Intl.DateTimeFormat('en-GB', { day:'2-digit', month:'2-digit', year:'numeric' }).format(new Date()) + ' ' + new Date().toLocaleTimeString('en-US');
     if (schoolLogoBase64) updateLogoPreview(schoolLogoBase64);
     const savedKey = localStorage.getItem('disposa_ai_key') || '';
     const savedModel = localStorage.getItem('disposa_ai_model') || 'claude-sonnet-4-5';
@@ -1007,8 +1273,11 @@ window.onload = () => {
     renderAssetsTable();
     renderDamageTable();
     populateAsetDropdown();
+    updateJawatanOptions();
+    renderUsersTable();
     updateStats();
     renderRecords();
+    initDashboardChart();
     const today = new Date().toISOString().split('T')[0];
     ['s_tarikh_surat','b12_tarikh_kebenaran','b12_tarikh_musnah','b12_tarikh_pengesahan','k_tarikh','q_tarikh_kelulusan','q_tarikh_pelupusan','q_tarikh_pengesahan'].forEach(id => {
         const el = document.getElementById(id); if (el) el.value = today;
@@ -1016,18 +1285,85 @@ window.onload = () => {
 };
 
 // ============ TABS ============
+const ALL_TABS = ['dashboard','ai','tetapan','aset','kerosakan','pelupusan','perakuan','surat','borang','borang2','borang12','list',
+    'aset-manual','aset-pukal','status-pengesahan','kemaskini-pukal','status-pemadanan',
+    'harta-modal','aset-rendah','pengurusan-lokasi','pengguna',
+    'rpt-pa3','rpt-pa4','rpt-pa5','rpt-pa6','rpt-pa7','rpt-pa8','rpt-sukuan','rpt-pa11','aduan','manual'];
+
+const TAB_TITLES = {
+    dashboard:'Dashboard', ai:'Pembantu AI DISPOSA', tetapan:'Tetapan Sekolah', aset:'Daftar Aset',
+    kerosakan:'Laporan Kerosakan', pelupusan:'Pelupusan Aset (KEW.PA-14)', perakuan:'Perakuan Pelupusan (KEW.PA-16)',
+    surat:'Surat Iringan', borang:'Borang 9/08', borang2:'Borang 2/08', borang12:'Borang 12/08', list:'Senarai Rekod',
+    'aset-manual':'Pendaftaran Aset - Manual', 'aset-pukal':'Pendaftaran Aset - Pukal',
+    'status-pengesahan':'Status Pengesahan Aset', 'kemaskini-pukal':'Kemaskini Aset (Pukal)',
+    'status-pemadanan':'Status Pemadanan Aset', 'harta-modal':'Senarai Aset - Harta Modal',
+    'aset-rendah':'Senarai Aset - Bernilai Rendah', 'pengurusan-lokasi':'Pentadbiran - Pengurusan Lokasi',
+    pengguna:'Pendaftaran Guru & Bukan Guru',
+    'rpt-pa3':'KEW.PA-3', 'rpt-pa4':'KEW.PA-4', 'rpt-pa5':'KEW.PA-5', 'rpt-pa6':'KEW.PA-6',
+    'rpt-pa7':'KEW.PA-7', 'rpt-pa8':'KEW.PA-8', 'rpt-sukuan':'Laporan Sukuan Tahun',
+    'rpt-pa11':'KEW.PA-11', aduan:'Aduan Sistem', manual:'Manual Pengguna'
+};
+
+function renderPlaceholderIfNeeded(tab) {
+    const view = document.getElementById(`view-${tab}`);
+    if (!view) return;
+    if (view.dataset.rendered === '1') return;
+    const raw = view.innerText || '';
+    if (raw.startsWith('MODULE_PLACEHOLDER::')) {
+        const parts = raw.split('::');
+        const title = parts[1], desc = parts[2], icon = parts[3];
+        view.innerHTML = `
+            <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-sm border p-12 text-center">
+                <div class="w-16 h-16 mx-auto rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl mb-5"><i class="fas ${icon}"></i></div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">${title}</h3>
+                <p class="text-gray-500 text-sm mb-6">${desc}</p>
+                <span class="inline-block bg-amber-50 text-amber-600 text-xs font-bold px-4 py-2 rounded-full border border-amber-100"><i class="fas fa-tools mr-1"></i> Modul dalam pembangunan</span>
+            </div>`;
+        view.dataset.rendered = '1';
+    }
+}
+
+function toggleGroup(id) {
+    const el = document.getElementById(id);
+    const header = el.previousElementSibling;
+    el.classList.toggle('open');
+    header.classList.toggle('open');
+}
+
 function switchTab(tab) {
-    const all = ['dashboard','ai','tetapan','aset','kerosakan','pelupusan','perakuan','surat','borang','borang2','borang12','list'];
-    all.forEach(t => {
-        document.getElementById(`view-${t}`).classList.add('hidden');
-        document.getElementById(`btn-${t}`).classList.remove('active-tab');
+    ALL_TABS.forEach(t => {
+        const view = document.getElementById(`view-${t}`);
+        const btn = document.getElementById(`btn-${t}`);
+        if (view) view.classList.add('hidden');
+        if (btn) btn.classList.remove('active-tab');
     });
-    document.getElementById(`view-${tab}`).classList.remove('hidden');
-    document.getElementById(`btn-${tab}`).classList.add('active-tab');
-    const titles = { dashboard:'Dashboard', ai:'Pembantu AI DISPOSA', tetapan:'Tetapan Sekolah', aset:'Daftar Aset', kerosakan:'Laporan Kerosakan', pelupusan:'Pelupusan Aset (KEW.PA-14)', perakuan:'Perakuan Pelupusan (KEW.PA-16)', surat:'Surat Iringan', borang:'Borang 9/08', borang2:'Borang 2/08', borang12:'Borang 12/08', list:'Senarai Rekod' };
-    document.getElementById('tab-title').innerText = titles[tab] || tab;
+    const target = document.getElementById(`view-${tab}`);
+    if (target) target.classList.remove('hidden');
+    const btn = document.getElementById(`btn-${tab}`);
+    if (btn) btn.classList.add('active-tab');
+    document.getElementById('tab-title').innerText = TAB_TITLES[tab] || tab;
+    renderPlaceholderIfNeeded(tab);
     if (tab === 'kerosakan') populateAsetDropdown();
-    if (tab === 'dashboard') updateStats();
+    if (tab === 'pengguna') { updateJawatanOptions(); renderUsersTable(); }
+    if (tab === 'dashboard') { updateStats(); setTimeout(initDashboardChart, 30); }
+}
+
+// ============ DASHBOARD CHART ============
+function initDashboardChart() {
+    const canvas = document.getElementById('chart-negeri');
+    if (!canvas || typeof Chart === 'undefined') return;
+    if (negeriChart) { negeriChart.destroy(); }
+    const labels = ['Wilayah Persekutuan Kuala Lumpur','Johor','Kedah','Kelantan','Melaka','Negeri Sembilan','Pahang','Perak','Perlis','Selangor','Terengganu','Sabah','Pulau Pinang','Sarawak','Wilayah Persekutuan Putrajaya','Wilayah Persekutuan Labuan'];
+    const data = [60000, 460000, 380000, 360000, 360000, 190000, 260000, 340000, 5000, 940000, 190000, 650000, 260000, 700000, 90000, 15000];
+    negeriChart = new Chart(canvas.getContext('2d'), {
+        type: 'bar',
+        data: { labels, datasets: [{ label:'Jumlah Aset', data, backgroundColor:'#e11d48', borderRadius:3 }] },
+        options: {
+            responsive:true,
+            plugins:{ legend:{ display:false } },
+            scales:{ y:{ ticks:{ callback:v => v>=1000?(v/1000)+'k':v } }, x:{ ticks:{ font:{ size:9 } } } }
+        }
+    });
 }
 
 // ============ LOGO ============
@@ -1258,14 +1594,15 @@ function deleteAsset(idx) {
     renderAssetsTable(); populateAsetDropdown(); updateStats();
 }
 function statusBadge(status) {
-    const map = { 'Baik': 'bg-green-100 text-green-700', 'Rosak': 'bg-red-100 text-red-700', 'Cadang Lupus': 'bg-amber-100 text-amber-700', 'Dilupuskan': 'bg-gray-200 text-gray-500' };
+    const map = { 'Baik': 'bg-green-100 text-green-700', 'Rosak': 'bg-red-100 text-red-700', 'Cadang Lupus': 'bg-amber-100 text-amber-700', 'Dilupuskan': 'bg-gray-200 text-gray-500', 'Lebihan': 'bg-blue-100 text-blue-700' };
     return `<span class="px-2 py-1 rounded-full text-[10px] font-bold ${map[status] || 'bg-gray-100 text-gray-600'}">${status || '-'}</span>`;
 }
 function renderAssetsTable() {
     const q = (document.getElementById('aset-search')?.value || '').toLowerCase();
+    const kumpulanFilter = document.getElementById('aset-filter-kumpulan')?.value || '';
     const tbody = document.getElementById('aset-tbody');
     if (!tbody) return;
-    const filtered = assetsList.filter(a => !q || (a.nama + a.no + a.lokasi + a.status).toLowerCase().includes(q));
+    const filtered = assetsList.filter(a => (!q || (a.nama + a.no + a.lokasi + a.status).toLowerCase().includes(q)) && (!kumpulanFilter || a.kumpulan === kumpulanFilter));
     tbody.innerHTML = filtered.length ? '' : `<tr><td colspan="9" class="p-8 text-center text-gray-400">Tiada aset didaftarkan</td></tr>`;
     filtered.forEach((a) => {
         const idx = assetsList.indexOf(a);
@@ -1285,7 +1622,7 @@ function renderAssetsTable() {
             </td>`;
         tbody.appendChild(row);
     });
-    document.getElementById('aset-count').innerText = `${assetsList.length} aset`;
+    document.getElementById('aset-count').innerText = `${filtered.length} / ${assetsList.length} aset`;
 }
 
 // ---- Label / QR ----
@@ -1453,6 +1790,179 @@ function renderDamageTable() {
 }
 
 // ============================================================
+//  MODUL PENDAFTARAN GURU & BUKAN GURU (APLIKASI ANDROID)
+// ============================================================
+const JAWATAN_OPTIONS = {
+    'Guru': ['Guru Besar', 'Penolong Kanan Pentadbiran', 'Penolong Kanan Hal Ehwal Murid', 'Penolong Kanan Kokurikulum', 'Guru Akademik', 'Guru Perpustakaan & Media', 'Guru Data', 'Guru Penyayang', 'Lain-lain (Guru)'],
+    'Bukan Guru': ['Penolong Pegawai Tadbir', 'Pembantu Tadbir (Perkeranian/Operasi)', 'Pembantu Tadbir (Kewangan)', 'Pembantu Makmal', 'Pembantu Am Pejabat', 'Pekerja Am Rendah / Am Sekolah', 'Pengawal Keselamatan', 'Lain-lain (Bukan Guru)']
+};
+function updateJawatanOptions() {
+    const kategori = document.getElementById('u_kategori')?.value || 'Guru';
+    const sel = document.getElementById('u_jawatan');
+    if (!sel) return;
+    const opts = JAWATAN_OPTIONS[kategori] || [];
+    sel.innerHTML = opts.map(o => `<option>${o}</option>`).join('');
+}
+function generateUserAppId(kategori) {
+    const kod = (document.getElementById('d_kod_ptj')?.value || 'SKBT').toUpperCase();
+    const year = new Date().getFullYear();
+    const prefix = kategori === 'Guru' ? 'GR' : 'BG';
+    const countSame = usersList.filter(u => u.kategori === kategori).length + 1;
+    return `${kod}/${prefix}/${year}/${String(countSame).padStart(4, '0')}`;
+}
+function clearUserForm() {
+    ['u_nama','u_no_kp','u_telefon','u_emel','u_lokasi'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    document.getElementById('u_kategori').selectedIndex = 0;
+    updateJawatanOptions();
+    document.getElementById('u_peranan').selectedIndex = 0;
+    document.getElementById('u_status').selectedIndex = 0;
+    document.getElementById('u_edit_index').value = '';
+}
+function addUser() {
+    const nama = document.getElementById('u_nama').value.trim();
+    if (!nama) { alert('Sila isi Nama Penuh pengguna.'); return; }
+    const kategori = document.getElementById('u_kategori').value;
+    const editIdx = document.getElementById('u_edit_index').value;
+    const data = {
+        id_aplikasi: editIdx !== '' ? usersList[editIdx].id_aplikasi : generateUserAppId(kategori),
+        nama, no_kp: document.getElementById('u_no_kp').value, kategori,
+        jawatan: document.getElementById('u_jawatan').value,
+        telefon: document.getElementById('u_telefon').value,
+        emel: document.getElementById('u_emel').value,
+        lokasi: document.getElementById('u_lokasi').value,
+        peranan: document.getElementById('u_peranan').value,
+        status: document.getElementById('u_status').value
+    };
+    if (editIdx !== '') { usersList[editIdx] = data; } else { usersList.unshift(data); }
+    localStorage.setItem('disposa_users_v1', JSON.stringify(usersList));
+    clearUserForm();
+    renderUsersTable();
+}
+function editUser(idx) {
+    const u = usersList[idx];
+    document.getElementById('u_nama').value = u.nama;
+    document.getElementById('u_no_kp').value = u.no_kp;
+    document.getElementById('u_kategori').value = u.kategori;
+    updateJawatanOptions();
+    document.getElementById('u_jawatan').value = u.jawatan;
+    document.getElementById('u_telefon').value = u.telefon;
+    document.getElementById('u_emel').value = u.emel;
+    document.getElementById('u_lokasi').value = u.lokasi;
+    document.getElementById('u_peranan').value = u.peranan;
+    document.getElementById('u_status').value = u.status;
+    document.getElementById('u_edit_index').value = idx;
+    switchTab('pengguna');
+    window.scrollTo(0, 0);
+}
+function deleteUser(idx) {
+    if (!confirm('Padam pengguna ini daripada senarai aplikasi?')) return;
+    usersList.splice(idx, 1);
+    localStorage.setItem('disposa_users_v1', JSON.stringify(usersList));
+    renderUsersTable();
+}
+function userStatusBadge(status) {
+    const map = { 'Aktif': 'bg-green-100 text-green-700', 'Tidak Aktif': 'bg-red-100 text-red-700', 'Menunggu Pengesahan': 'bg-amber-100 text-amber-700' };
+    return `<span class="px-2 py-1 rounded-full text-[10px] font-bold ${map[status] || 'bg-gray-100 text-gray-600'}">${status || '-'}</span>`;
+}
+function renderUsersTable() {
+    const q = (document.getElementById('pengguna-search')?.value || '').toLowerCase();
+    const kategoriFilter = document.getElementById('pengguna-filter-kategori')?.value || '';
+    const tbody = document.getElementById('pengguna-tbody');
+    if (!tbody) return;
+    const filtered = usersList.filter(u => (!q || (u.nama + u.id_aplikasi + u.jawatan).toLowerCase().includes(q)) && (!kategoriFilter || u.kategori === kategoriFilter));
+    tbody.innerHTML = filtered.length ? '' : `<tr><td colspan="8" class="p-8 text-center text-gray-400">Tiada pengguna didaftarkan lagi</td></tr>`;
+    filtered.forEach((u) => {
+        const idx = usersList.indexOf(u);
+        const row = document.createElement('tr');
+        row.innerHTML = `<td class="p-3 border-b text-xs font-bold text-indigo-600">${u.id_aplikasi}</td>
+            <td class="p-3 border-b text-sm">${u.nama}</td>
+            <td class="p-3 border-b text-xs">${u.kategori}</td>
+            <td class="p-3 border-b text-xs">${u.jawatan || '-'}</td>
+            <td class="p-3 border-b text-xs">${u.peranan || '-'}</td>
+            <td class="p-3 border-b text-xs">${u.telefon || '-'}</td>
+            <td class="p-3 border-b">${userStatusBadge(u.status)}</td>
+            <td class="p-3 border-b text-right whitespace-nowrap">
+                <button onclick="showUserQr(${idx})" class="text-indigo-500 hover:text-indigo-700 mr-2" title="Kod QR Log Masuk"><i class="fas fa-qrcode"></i></button>
+                <button onclick="editUser(${idx})" class="text-blue-500 hover:text-blue-700 mr-2" title="Edit"><i class="fas fa-edit"></i></button>
+                <button onclick="deleteUser(${idx})" class="text-red-400 hover:text-red-600" title="Padam"><i class="fas fa-trash"></i></button>
+            </td>`;
+        tbody.appendChild(row);
+    });
+    document.getElementById('pengguna-count').innerText = `${filtered.length} / ${usersList.length} pengguna`;
+    const elGuru = document.getElementById('stat-pengguna-guru'); if (elGuru) elGuru.innerText = usersList.filter(u => u.kategori === 'Guru').length;
+    const elBukan = document.getElementById('stat-pengguna-bukanguru'); if (elBukan) elBukan.innerText = usersList.filter(u => u.kategori === 'Bukan Guru').length;
+    const elJumlah = document.getElementById('stat-pengguna-jumlah'); if (elJumlah) elJumlah.innerText = usersList.length;
+}
+
+// ---- Kod QR Log Masuk Aplikasi ----
+function showUserQr(idx) {
+    const u = usersList[idx];
+    document.getElementById('user-qr-nama').innerText = u.nama;
+    document.getElementById('user-qr-id').innerText = u.id_aplikasi;
+    document.getElementById('user-qr-jawatan').innerText = `${u.kategori} — ${u.jawatan || ''}`;
+    document.getElementById('user-qrcode-box').innerHTML = '';
+    new QRCode(document.getElementById('user-qrcode-box'), { text: u.id_aplikasi, width: 90, height: 90 });
+    document.getElementById('user-qr-modal').classList.remove('hidden');
+    window._currentUserQrIdx = idx;
+}
+function closeUserQrModal() { document.getElementById('user-qr-modal').classList.add('hidden'); }
+function printUserQr() {
+    setTimeout(() => {
+        const box = document.getElementById('user-qrcode-box');
+        const qrEl = box.querySelector('img') || box.querySelector('canvas');
+        const src = qrEl.tagName === 'IMG' ? qrEl.src : qrEl.toDataURL();
+        const u = usersList[window._currentUserQrIdx];
+        const w = window.open('', '_blank', 'width=400,height=320');
+        w.document.write(`<html><body style="font-family:Arial,sans-serif;text-align:center;padding:20px;">
+            <div style="border:1px solid #333;padding:14px;width:220px;margin:auto;border-radius:8px;">
+            <img src="${src}" style="width:90px;height:90px;"/>
+            <p style="font-size:12px;font-weight:bold;margin:6px 0 2px;">${u.nama}</p>
+            <p style="font-size:11px;color:#4338ca;margin:0;font-weight:bold;">${u.id_aplikasi}</p>
+            <p style="font-size:9px;color:#888;margin:2px 0 0;">${u.kategori} — ${u.jawatan || ''}</p>
+            </div></body></html>`);
+        w.document.close();
+        w.focus();
+        w.print();
+    }, 250);
+}
+
+// ---- PDF Senarai Pengguna Berdaftar ----
+function downloadUsersRegisterPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const PW = 297, PH = 210, ML = 12, MR = 12;
+    const TW = PW - ML - MR, CX = PW / 2;
+    const setFont = (style = 'normal', size = 9) => { doc.setFont('helvetica', style); doc.setFontSize(size); };
+    setFont('bold', 13); doc.text('SENARAI PENGGUNA APLIKASI DISPOSA ONE (GURU & BUKAN GURU)', CX, 14, { align: 'center' });
+    setFont('normal', 9); doc.text(document.getElementById('h_nama_sekolah')?.value || '', CX, 20, { align: 'center' });
+    setFont('normal', 8); doc.text('Dijana pada ' + new Date().toLocaleDateString('ms-MY'), CX, 25, { align: 'center' });
+
+    let y = 32;
+    const cols = [30, 45, 26, 40, 34, 28, 30, 24];
+    const colX = [ML]; cols.forEach((w, i) => colX.push(colX[i] + w));
+    const headers = ['ID Aplikasi','Nama','Kategori','Jawatan','Peranan','Telefon','E-mel','Status'];
+    const HDR_H = 8, ROW_H = 7;
+    doc.rect(ML, y, TW, HDR_H);
+    cols.forEach((_, i) => { if (i > 0) doc.line(colX[i], y, colX[i], y + HDR_H); });
+    setFont('bold', 7.5);
+    headers.forEach((h, i) => doc.text(h, colX[i] + 2, y + 5.5));
+    y += HDR_H;
+
+    setFont('normal', 7);
+    usersList.forEach((u) => {
+        if (y + ROW_H > PH - 15) { doc.addPage(); y = 15; doc.rect(ML, y, TW, HDR_H); cols.forEach((_, i) => { if (i > 0) doc.line(colX[i], y, colX[i], y + HDR_H); }); setFont('bold', 7.5); headers.forEach((h, i) => doc.text(h, colX[i] + 2, y + 5.5)); setFont('normal', 7); y += HDR_H; }
+        doc.rect(ML, y, TW, ROW_H);
+        cols.forEach((_, i) => { if (i > 0) doc.line(colX[i], y, colX[i], y + ROW_H); });
+        const vals = [u.id_aplikasi, u.nama, u.kategori, u.jawatan, u.peranan, u.telefon, u.emel, u.status];
+        vals.forEach((v, i) => { const lines = doc.splitTextToSize(String(v || '-'), cols[i] - 3); doc.text(lines[0] || '-', colX[i] + 2, y + 4.8); });
+        y += ROW_H;
+    });
+    setFont('normal', 8);
+    doc.text(`Jumlah Guru: ${usersList.filter(u => u.kategori === 'Guru').length}   |   Jumlah Bukan Guru: ${usersList.filter(u => u.kategori === 'Bukan Guru').length}   |   Jumlah Keseluruhan: ${usersList.length}`, ML, PH - 8);
+    doc.save('Senarai_Pengguna_Aplikasi_DISPOSA_ONE.pdf');
+}
+
+// ============================================================
 //  MODUL PELUPUSAN ASET (KEW.PA-14) — jadual item
 // ============================================================
 function addPelupusanItem(data = {}) {
@@ -1505,6 +2015,9 @@ function saveRecord(type) {
 function updateStats() {
     const elTotal = document.getElementById('stat-total'); if (elTotal) elTotal.innerText = records.length;
     const elAset = document.getElementById('stat-aset'); if (elAset) elAset.innerText = assetsList.length;
+    const elHartaModal = document.getElementById('stat-harta-modal'); if (elHartaModal) elHartaModal.innerText = assetsList.filter(a => a.kumpulan === 'Harta Modal').length;
+    const elAsetRendah = document.getElementById('stat-aset-rendah'); if (elAsetRendah) elAsetRendah.innerText = assetsList.filter(a => a.kumpulan === 'Inventori').length;
+    const elLebihan = document.getElementById('stat-aset-lebihan'); if (elLebihan) elLebihan.innerText = assetsList.filter(a => a.status === 'Lebihan').length;
     const elRosak = document.getElementById('stat-rosak'); if (elRosak) elRosak.innerText = assetsList.filter(a => a.status === 'Rosak' || a.status === 'Cadang Lupus').length;
     const elDilupus = document.getElementById('stat-dilupus'); if (elDilupus) elDilupus.innerText = assetsList.filter(a => a.status === 'Dilupuskan').length;
     renderKategoriChart();
