@@ -73,14 +73,12 @@
             <h1 class="text-xl font-bold tracking-wider">DISPOSA <span class="text-indigo-300">ONE</span></h1>
             <p class="text-xs text-indigo-300 mt-1 uppercase">Aset • Inventori • Pelupusan</p>
         </div>
-        <nav class="mt-2 flex-1">
+        <nav class="mt-2 flex-1 sidebar-scroll" style="overflow-y:auto;">
             <button onclick="switchTab('dashboard')" id="btn-dashboard" class="sidebar-item active-tab w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-th-large mr-3 w-4"></i> Dashboard</button>
 
-            <div class="nav-group-label">AI DISPOSA <span class="text-emerald-400">(Baharu)</span></div>
-            <button onclick="switchTab('ai')" id="btn-ai" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-robot mr-3 w-4"></i> Pembantu AI</button>
+            <button onclick="switchTab('ai')" id="btn-ai" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-user-tie mr-3 w-4"></i> Setiausaha AI</button>
 
-            <div class="nav-group-label">Aset &amp; Inventori</div>
-            <button onclick="switchTab('tetapan')" id="btn-tetapan" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-cog mr-3 w-4"></i> Tetapan Sekolah</button>
+            <div class="nav-group-label">Aset Dan Inventori</div>
 
             <div>
                 <div class="sidebar-group-header sidebar-item flex items-center justify-between px-6 py-3" onclick="toggleGroup('grp-pendaftaran')">
@@ -88,16 +86,14 @@
                     <i class="fas fa-chevron-down text-xs chevron"></i>
                 </div>
                 <div id="grp-pendaftaran" class="sidebar-submenu">
-                    <button onclick="switchTab('aset-manual')" id="btn-aset-manual" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-sm transition-colors"><i class="fas fa-keyboard mr-3 w-4"></i> Manual</button>
-                    <button onclick="switchTab('aset-pukal')" id="btn-aset-pukal" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-sm transition-colors"><i class="fas fa-layer-group mr-3 w-4"></i> Pukal</button>
+                    <button onclick="switchTab('aset')" id="btn-aset-manual" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-sm transition-colors"><i class="fas fa-keyboard mr-3 w-4"></i> Manual</button>
+                    <button onclick="switchTab('aset')" id="btn-aset-pukal" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-sm transition-colors"><i class="fas fa-layer-group mr-3 w-4"></i> Pukal</button>
                 </div>
             </div>
 
-            <button onclick="switchTab('aset')" id="btn-aset" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-boxes mr-3 w-4"></i> Daftar Aset</button>
             <button onclick="switchTab('status-pengesahan')" id="btn-status-pengesahan" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-clipboard-check mr-3 w-4"></i> Status Pengesahan Aset</button>
             <button onclick="switchTab('kemaskini-pukal')" id="btn-kemaskini-pukal" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-sync-alt mr-3 w-4"></i> Kemaskini Aset (Pukal)</button>
             <button onclick="switchTab('status-pemadanan')" id="btn-status-pemadanan" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-map-marker-alt mr-3 w-4"></i> Status Pemadanan Aset</button>
-            <button onclick="switchTab('kerosakan')" id="btn-kerosakan" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-tools mr-3 w-4"></i> Laporan Kerosakan</button>
 
             <div>
                 <div class="sidebar-group-header sidebar-item flex items-center justify-between px-6 py-3" onclick="toggleGroup('grp-senarai')">
@@ -120,40 +116,97 @@
                 </div>
             </div>
 
-            <div class="nav-group-label">Pelupusan Aset (KEW.PA)</div>
-            <button onclick="switchTab('pelupusan')" id="btn-pelupusan" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-file-invoice mr-3 w-4"></i> Pelupusan Aset (KEW.PA-14)</button>
-            <button onclick="switchTab('perakuan')" id="btn-perakuan" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-stamp mr-3 w-4"></i> Perakuan Pelupusan (KEW.PA-16)</button>
-
-            <div class="nav-group-label">Pelupusan Rekod &amp; Buku (PSS)</div>
-            <button onclick="switchTab('surat')" id="btn-surat" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-envelope mr-3 w-4"></i> Surat Iringan</button>
-            <button onclick="switchTab('borang')" id="btn-borang" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-file-alt mr-3 w-4"></i> Borang 9/08</button>
-            <button onclick="switchTab('borang2')" id="btn-borang2" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-file-signature mr-3 w-4"></i> Borang 2/08</button>
-            <button onclick="switchTab('borang12')" id="btn-borang12" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-check-double mr-3 w-4"></i> Borang 12/08</button>
-
             <div>
                 <div class="sidebar-group-header sidebar-item flex items-center justify-between px-6 py-3" onclick="toggleGroup('grp-laporan')">
                     <span class="flex items-center"><i class="fas fa-chart-bar mr-3 w-4"></i> Laporan</span>
                     <i class="fas fa-chevron-down text-xs chevron"></i>
                 </div>
                 <div id="grp-laporan" class="sidebar-submenu">
-                    <button onclick="switchTab('rpt-pa3')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>KEW.PA-3<br><span class="text-[11px] opacity-80">Daftar Harta Modal</span></span></button>
-                    <button onclick="switchTab('rpt-pa4')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>KEW.PA-4<br><span class="text-[11px] opacity-80">Daftar Aset Alih Bernilai Rendah</span></span></button>
-                    <button onclick="switchTab('rpt-pa5')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>KEW.PA-5<br><span class="text-[11px] opacity-80">Senarai Daftar Harta Modal</span></span></button>
-                    <button onclick="switchTab('rpt-pa6')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>KEW.PA-6<br><span class="text-[11px] opacity-80">Senarai Daftar Aset Alih Bernilai Rendah</span></span></button>
-                    <button onclick="switchTab('rpt-pa7')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>KEW.PA-7<br><span class="text-[11px] opacity-80">Senarai Aset Alih</span></span></button>
-                    <button onclick="switchTab('rpt-pa8')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>KEW.PA-8<br><span class="text-[11px] opacity-80">Laporan Kedudukan Semasa Aset Alih</span></span></button>
-                    <button onclick="switchTab('rpt-sukuan')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Laporan Kedudukan Aset Semasa (Sukuan Tahun)</span></button>
-                    <button onclick="switchTab('rpt-pa11')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>KEW.PA-11<br><span class="text-[11px] opacity-80">Borang Pemeriksaan Aset</span></span></button>
-                    <button onclick="switchTab('aduan')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Aduan Sistem</span></button>
-                    <button onclick="switchTab('manual')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Manual Pengguna</span></button>
+                    <button onclick="switchTab('rpt-pa11')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-11<br><span class="text-[11px] opacity-80">Borang Pemeriksaan Aset</span></span></button>
                 </div>
             </div>
 
-            <div class="nav-group-label">Aplikasi Mudah Alih (Android) <span class="text-emerald-400">(Baharu)</span></div>
-            <button onclick="switchTab('pengguna')" id="btn-pengguna" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-user-plus mr-3 w-4"></i> Pendaftaran Guru &amp; Bukan Guru</button>
+            <div>
+                <div class="sidebar-group-header sidebar-item flex items-center justify-between px-6 py-3" onclick="toggleGroup('grp-kewpa')">
+                    <span class="flex items-center"><i class="fas fa-folder-open mr-3 w-4"></i> Borang Kew.Pa</span>
+                    <i class="fas fa-chevron-down text-xs chevron"></i>
+                </div>
+                <div id="grp-kewpa" class="sidebar-submenu">
+                    <div class="px-6 pt-3 pb-1 text-[10px] font-bold text-indigo-300 uppercase tracking-wide opacity-80">Penerimaan Dan Pendaftaran</div>
+                    <button onclick="switchTab('kewpa-1')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-1<br><span class="text-[11px] opacity-80">Borang Laporan Penerimaan Aset Alih Kerajaan</span></span></button>
+                    <button onclick="switchTab('kewpa-2')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-2<br><span class="text-[11px] opacity-80">Daftar Harta Modal</span></span></button>
+                    <button onclick="switchTab('kewpa-3')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-3<br><span class="text-[11px] opacity-80">Daftar Inventori</span></span></button>
+                    <button onclick="switchTab('kewpa-4')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-4<br><span class="text-[11px] opacity-80">Senarai Daftar Harta Modal</span></span></button>
+                    <button onclick="switchTab('kewpa-5')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-5<br><span class="text-[11px] opacity-80">Senarai Daftar Inventori</span></span></button>
+                    <button onclick="switchTab('kewpa-6')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-6<br><span class="text-[11px] opacity-80">Daftar Pergerakan Harta Modal Dan Inventori</span></span></button>
+                    <button onclick="switchTab('kewpa-7')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-7<br><span class="text-[11px] opacity-80">Senarai Aset Alih Kerajaan</span></span></button>
+                    <div class="px-6 pt-3 pb-1 text-[10px] font-bold text-indigo-300 uppercase tracking-wide opacity-80">Pemeriksaan, Penyelenggaraan Dan Pelaporan</div>
+                    <button onclick="switchTab('kewpa-8')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-8<br><span class="text-[11px] opacity-80">Laporan Tahunan Harta Modal Dan Inventori</span></span></button>
+                    <button onclick="switchTab('kewpa-9')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-9<br><span class="text-[11px] opacity-80">Borang Aduan Kerosakan Aset Alih Kerajaan</span></span></button>
+                    <button onclick="switchTab('kewpa-10')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-10<br><span class="text-[11px] opacity-80">Laporan Pemeriksaan Harta Modal</span></span></button>
+                    <button onclick="switchTab('kewpa-11')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-11<br><span class="text-[11px] opacity-80">Laporan Pemeriksaan Inventori</span></span></button>
+                    <button onclick="switchTab('kewpa-12')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-12<br><span class="text-[11px] opacity-80">Sijil Tahunan Pemeriksaan Aset Alih</span></span></button>
+                    <button onclick="switchTab('kewpa-13')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-13<br><span class="text-[11px] opacity-80">Senarai Aset Alih Yang Memerlukan Penyelenggaraan Berjadual</span></span></button>
+                    <button onclick="switchTab('kewpa-14')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-14<br><span class="text-[11px] opacity-80">Rekod Penyelenggaraan Aset Alih</span></span></button>
+                    <div class="px-6 pt-3 pb-1 text-[10px] font-bold text-indigo-300 uppercase tracking-wide opacity-80">Pelupusan (Hapus Kira)</div>
+                    <button onclick="switchTab('pelupusan')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-15<br><span class="text-[11px] opacity-80">Laporan Pemeriksaan Aset Alih (Pelupusan)</span></span></button>
+                    <button onclick="switchTab('perakuan')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-16<br><span class="text-[11px] opacity-80">Sijil Penyaksian Pemusnahan Aset Alih</span></span></button>
+                    <button onclick="switchTab('kewpa-17')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-17<br><span class="text-[11px] opacity-80">Sijil Pelupusan Aset Alih</span></span></button>
+                    <div class="px-6 pt-3 pb-1 text-[10px] font-bold text-indigo-300 uppercase tracking-wide opacity-80">Kehilangan Dan Hapus Kira</div>
+                    <button onclick="switchTab('kewpa-18')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-18<br><span class="text-[11px] opacity-80">Laporan Awal Kehilangan Aset Alih Kerajaan</span></span></button>
+                    <button onclick="switchTab('kewpa-19')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-19<br><span class="text-[11px] opacity-80">Laporan Akhir Kehilangan Aset Alih Kerajaan</span></span></button>
+                    <button onclick="switchTab('kewpa-20')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Kew.Pa-20<br><span class="text-[11px] opacity-80">Sijil Hapus Kira Aset Alih Kerajaan</span></span></button>
+                </div>
+            </div>
+
+            <div>
+                <div class="sidebar-group-header sidebar-item flex items-center justify-between px-6 py-3" onclick="toggleGroup('grp-arkib')">
+                    <span class="flex items-center"><i class="fas fa-archive mr-3 w-4"></i> Pelupusan Rekod Awam</span>
+                    <i class="fas fa-chevron-down text-xs chevron"></i>
+                </div>
+                <div id="grp-arkib" class="sidebar-submenu">
+                    <button onclick="switchTab('arkib-1')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Borang Arkib 1/08<br><span class="text-[11px] opacity-80">Jadual Pelupusan Rekod</span></span></button>
+                    <button onclick="switchTab('borang2')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Borang Arkib 2/08<br><span class="text-[11px] opacity-80">Borang Permohonan Bagi Pemusnahan Rekod Awam</span></span></button>
+                    <button onclick="switchTab('arkib-3')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Borang Arkib 3/08<br><span class="text-[11px] opacity-80">Borang Permohonan Bagi Pemusnahan Rekod Elektronik</span></span></button>
+                    <button onclick="switchTab('arkib-4')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Borang Arkib 4/08<br><span class="text-[11px] opacity-80">Borang Permohonan Bagi Pemusnahan Rekod Kewangan Dan Perakaunan</span></span></button>
+                    <button onclick="switchTab('arkib-5')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Borang Arkib 5/08<br><span class="text-[11px] opacity-80">Borang Permohonan Bagi Pelupusan Fail (Yang Tidak Dinyatakan Dalam Jadual Pelupusan Rekod)</span></span></button>
+                    <button onclick="switchTab('arkib-6')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Borang Arkib 6/08<br><span class="text-[11px] opacity-80">Borang Permohonan Bagi Pelupusan Rekod Kartografi (Yang Tidak Dinyatakan Dalam Jadual Pelupusan Rekod)</span></span></button>
+                    <button onclick="switchTab('arkib-7')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Borang Arkib 7/08<br><span class="text-[11px] opacity-80">Borang Permohonan Bagi Pelupusan Rekod Seni Bina (Yang Tidak Dinyatakan Dalam Jadual Pelupusan Rekod)</span></span></button>
+                    <button onclick="switchTab('arkib-8')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Borang Arkib 8/08<br><span class="text-[11px] opacity-80">Borang Permohonan Bagi Pelupusan Rekod Pandang Dengar (Yang Tidak Dinyatakan Dalam Jadual Pelupusan Rekod)</span></span></button>
+                    <button onclick="switchTab('borang')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Borang Arkib 9/08<br><span class="text-[11px] opacity-80">Borang Permohonan Bagi Pelupusan Rekod Terbitan Dan Bahan Bercetak (Yang Tidak Dinyatakan Dalam Jadual Pelupusan Rekod)</span></span></button>
+                    <button onclick="switchTab('arkib-10')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Borang Arkib 10/08<br><span class="text-[11px] opacity-80">Borang Permohonan Bagi Pelupusan Rekod Elektronik (Yang Tidak Dinyatakan Dalam Jadual Pelupusan Rekod)</span></span></button>
+                    <button onclick="switchTab('arkib-11')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Borang Arkib 11/08<br><span class="text-[11px] opacity-80">Borang Permohonan Bagi Pemindahan Rekod Awam</span></span></button>
+                    <button onclick="switchTab('borang12')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Borang Arkib 12/08<br><span class="text-[11px] opacity-80">Penentusahan Pemusnahan Rekod Awam</span></span></button>
+                    <button onclick="switchTab('arkib-13')" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-xs transition-colors text-left"><span>Borang Arkib 13/08<br><span class="text-[11px] opacity-80">Penentusahan Pemusnahan Rekod Kewangan Dan Perakaunan</span></span></button>
+                </div>
+            </div>
+
+            <div>
+                <div class="sidebar-group-header sidebar-item flex items-center justify-between px-6 py-3" onclick="toggleGroup('grp-surat')">
+                    <span class="flex items-center"><i class="fas fa-envelope mr-3 w-4"></i> Surat Iringan</span>
+                    <i class="fas fa-chevron-down text-xs chevron"></i>
+                </div>
+                <div id="grp-surat" class="sidebar-submenu">
+                    <button onclick="switchTab('surat')" id="btn-surat" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-sm transition-colors"><i class="fas fa-pen mr-3 w-4"></i> Jana Surat</button>
+                </div>
+            </div>
+
+            <button onclick="switchTab('pengguna')" id="btn-pengguna" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-user-plus mr-3 w-4"></i> Pendaftaran Guru Dan Bukan Guru</button>
+
+            <div>
+                <div class="sidebar-group-header sidebar-item flex items-center justify-between px-6 py-3" onclick="toggleGroup('grp-aduan')">
+                    <span class="flex items-center"><i class="fas fa-exclamation-circle mr-3 w-4"></i> Aduan Kerosakan</span>
+                    <i class="fas fa-chevron-down text-xs chevron"></i>
+                </div>
+                <div id="grp-aduan" class="sidebar-submenu">
+                    <button onclick="switchTab('kerosakan')" id="btn-kerosakan" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-sm transition-colors"><i class="fas fa-tools mr-3 w-4"></i> Rekod Aduan</button>
+                    <button onclick="switchTab('aduan-native')" id="btn-aduan-native" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-sm transition-colors"><i class="fas fa-mobile-alt mr-3 w-4"></i> Rekod Aduan (Aplikasi Pintar)</button>
+                </div>
+            </div>
 
             <div class="nav-group-label">Rekod</div>
-            <button onclick="switchTab('list')" id="btn-list" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-list mr-3 w-4"></i> Senarai Rekod</button>
+            <button onclick="switchTab('list')" id="btn-list" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-list mr-3 w-4"></i> Senarai Rekod Tersimpan</button>
+            <button onclick="switchTab('tetapan')" id="btn-tetapan" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-cog mr-3 w-4"></i> Penetapan Sistem</button>
         </nav>
         <div class="p-4 border-t border-indigo-800">
             <button onclick="handleLogout()" class="w-full flex items-center justify-center gap-2 py-3 text-red-300 hover:text-red-100 hover:bg-red-900/30 rounded-lg transition-all font-semibold"><i class="fas fa-sign-out-alt"></i> Keluar Sistem</button>
@@ -414,6 +467,35 @@
             <div id="view-rpt-pa11" class="hidden">MODULE_PLACEHOLDER::KEW.PA-11 — Borang Pemeriksaan Aset::Jana Borang Pemeriksaan Aset rasmi.::fa-file-invoice</div>
             <div id="view-aduan" class="hidden">MODULE_PLACEHOLDER::Aduan Sistem::Hantar atau semak status aduan berkaitan sistem.::fa-comment-dots</div>
             <div id="view-manual" class="hidden">MODULE_PLACEHOLDER::Manual Pengguna::Muat turun panduan penggunaan sistem DISPOSA ONE.::fa-book</div>
+            <div id="view-kewpa-1" class="hidden">MODULE_PLACEHOLDER::Kew.Pa-1 — Borang Laporan Penerimaan Aset Alih Kerajaan::Jana / urus borang rasmi Kew.Pa-1 (Borang Laporan Penerimaan Aset Alih Kerajaan).::fa-file-invoice</div>
+            <div id="view-kewpa-2" class="hidden">MODULE_PLACEHOLDER::Kew.Pa-2 — Daftar Harta Modal::Jana / urus borang rasmi Kew.Pa-2 (Daftar Harta Modal).::fa-file-invoice</div>
+            <div id="view-kewpa-3" class="hidden">MODULE_PLACEHOLDER::Kew.Pa-3 — Daftar Inventori::Jana / urus borang rasmi Kew.Pa-3 (Daftar Inventori).::fa-file-invoice</div>
+            <div id="view-kewpa-4" class="hidden">MODULE_PLACEHOLDER::Kew.Pa-4 — Senarai Daftar Harta Modal::Jana / urus borang rasmi Kew.Pa-4 (Senarai Daftar Harta Modal).::fa-file-invoice</div>
+            <div id="view-kewpa-5" class="hidden">MODULE_PLACEHOLDER::Kew.Pa-5 — Senarai Daftar Inventori::Jana / urus borang rasmi Kew.Pa-5 (Senarai Daftar Inventori).::fa-file-invoice</div>
+            <div id="view-kewpa-6" class="hidden">MODULE_PLACEHOLDER::Kew.Pa-6 — Daftar Pergerakan Harta Modal Dan Inventori::Jana / urus borang rasmi Kew.Pa-6 (Daftar Pergerakan Harta Modal Dan Inventori).::fa-file-invoice</div>
+            <div id="view-kewpa-7" class="hidden">MODULE_PLACEHOLDER::Kew.Pa-7 — Senarai Aset Alih Kerajaan::Jana / urus borang rasmi Kew.Pa-7 (Senarai Aset Alih Kerajaan).::fa-file-invoice</div>
+            <div id="view-kewpa-8" class="hidden">MODULE_PLACEHOLDER::Kew.Pa-8 — Laporan Tahunan Harta Modal Dan Inventori::Jana / urus borang rasmi Kew.Pa-8 (Laporan Tahunan Harta Modal Dan Inventori).::fa-file-invoice</div>
+            <div id="view-kewpa-9" class="hidden">MODULE_PLACEHOLDER::Kew.Pa-9 — Borang Aduan Kerosakan Aset Alih Kerajaan::Jana / urus borang rasmi Kew.Pa-9 (Borang Aduan Kerosakan Aset Alih Kerajaan).::fa-file-invoice</div>
+            <div id="view-kewpa-10" class="hidden">MODULE_PLACEHOLDER::Kew.Pa-10 — Laporan Pemeriksaan Harta Modal::Jana / urus borang rasmi Kew.Pa-10 (Laporan Pemeriksaan Harta Modal).::fa-file-invoice</div>
+            <div id="view-kewpa-11" class="hidden">MODULE_PLACEHOLDER::Kew.Pa-11 — Laporan Pemeriksaan Inventori::Jana / urus borang rasmi Kew.Pa-11 (Laporan Pemeriksaan Inventori).::fa-file-invoice</div>
+            <div id="view-kewpa-12" class="hidden">MODULE_PLACEHOLDER::Kew.Pa-12 — Sijil Tahunan Pemeriksaan Aset Alih::Jana / urus borang rasmi Kew.Pa-12 (Sijil Tahunan Pemeriksaan Aset Alih).::fa-file-invoice</div>
+            <div id="view-kewpa-13" class="hidden">MODULE_PLACEHOLDER::Kew.Pa-13 — Senarai Aset Alih Yang Memerlukan Penyelenggaraan Berjadual::Jana / urus borang rasmi Kew.Pa-13 (Senarai Aset Alih Yang Memerlukan Penyelenggaraan Berjadual).::fa-file-invoice</div>
+            <div id="view-kewpa-14" class="hidden">MODULE_PLACEHOLDER::Kew.Pa-14 — Rekod Penyelenggaraan Aset Alih::Jana / urus borang rasmi Kew.Pa-14 (Rekod Penyelenggaraan Aset Alih).::fa-file-invoice</div>
+            <div id="view-kewpa-17" class="hidden">MODULE_PLACEHOLDER::Kew.Pa-17 — Sijil Pelupusan Aset Alih::Jana / urus borang rasmi Kew.Pa-17 (Sijil Pelupusan Aset Alih).::fa-file-invoice</div>
+            <div id="view-kewpa-18" class="hidden">MODULE_PLACEHOLDER::Kew.Pa-18 — Laporan Awal Kehilangan Aset Alih Kerajaan::Jana / urus borang rasmi Kew.Pa-18 (Laporan Awal Kehilangan Aset Alih Kerajaan).::fa-file-invoice</div>
+            <div id="view-kewpa-19" class="hidden">MODULE_PLACEHOLDER::Kew.Pa-19 — Laporan Akhir Kehilangan Aset Alih Kerajaan::Jana / urus borang rasmi Kew.Pa-19 (Laporan Akhir Kehilangan Aset Alih Kerajaan).::fa-file-invoice</div>
+            <div id="view-kewpa-20" class="hidden">MODULE_PLACEHOLDER::Kew.Pa-20 — Sijil Hapus Kira Aset Alih Kerajaan::Jana / urus borang rasmi Kew.Pa-20 (Sijil Hapus Kira Aset Alih Kerajaan).::fa-file-invoice</div>
+            <div id="view-arkib-1" class="hidden">MODULE_PLACEHOLDER::Borang Arkib 1/08 — Jadual Pelupusan Rekod::Jana / urus borang rasmi Arkib 1/08 (Jadual Pelupusan Rekod).::fa-archive</div>
+            <div id="view-arkib-3" class="hidden">MODULE_PLACEHOLDER::Borang Arkib 3/08 — Borang Permohonan Bagi Pemusnahan Rekod Elektronik::Jana / urus borang rasmi Arkib 3/08 (Borang Permohonan Bagi Pemusnahan Rekod Elektronik).::fa-archive</div>
+            <div id="view-arkib-4" class="hidden">MODULE_PLACEHOLDER::Borang Arkib 4/08 — Borang Permohonan Bagi Pemusnahan Rekod Kewangan Dan Perakaunan::Jana / urus borang rasmi Arkib 4/08 (Borang Permohonan Bagi Pemusnahan Rekod Kewangan Dan Perakaunan).::fa-archive</div>
+            <div id="view-arkib-5" class="hidden">MODULE_PLACEHOLDER::Borang Arkib 5/08 — Borang Permohonan Bagi Pelupusan Fail (Yang Tidak Dinyatakan Dalam Jadual Pelupusan Rekod)::Jana / urus borang rasmi Arkib 5/08 (Borang Permohonan Bagi Pelupusan Fail (Yang Tidak Dinyatakan Dalam Jadual Pelupusan Rekod)).::fa-archive</div>
+            <div id="view-arkib-6" class="hidden">MODULE_PLACEHOLDER::Borang Arkib 6/08 — Borang Permohonan Bagi Pelupusan Rekod Kartografi (Yang Tidak Dinyatakan Dalam Jadual Pelupusan Rekod)::Jana / urus borang rasmi Arkib 6/08 (Borang Permohonan Bagi Pelupusan Rekod Kartografi (Yang Tidak Dinyatakan Dalam Jadual Pelupusan Rekod)).::fa-archive</div>
+            <div id="view-arkib-7" class="hidden">MODULE_PLACEHOLDER::Borang Arkib 7/08 — Borang Permohonan Bagi Pelupusan Rekod Seni Bina (Yang Tidak Dinyatakan Dalam Jadual Pelupusan Rekod)::Jana / urus borang rasmi Arkib 7/08 (Borang Permohonan Bagi Pelupusan Rekod Seni Bina (Yang Tidak Dinyatakan Dalam Jadual Pelupusan Rekod)).::fa-archive</div>
+            <div id="view-arkib-8" class="hidden">MODULE_PLACEHOLDER::Borang Arkib 8/08 — Borang Permohonan Bagi Pelupusan Rekod Pandang Dengar (Yang Tidak Dinyatakan Dalam Jadual Pelupusan Rekod)::Jana / urus borang rasmi Arkib 8/08 (Borang Permohonan Bagi Pelupusan Rekod Pandang Dengar (Yang Tidak Dinyatakan Dalam Jadual Pelupusan Rekod)).::fa-archive</div>
+            <div id="view-arkib-10" class="hidden">MODULE_PLACEHOLDER::Borang Arkib 10/08 — Borang Permohonan Bagi Pelupusan Rekod Elektronik (Yang Tidak Dinyatakan Dalam Jadual Pelupusan Rekod)::Jana / urus borang rasmi Arkib 10/08 (Borang Permohonan Bagi Pelupusan Rekod Elektronik (Yang Tidak Dinyatakan Dalam Jadual Pelupusan Rekod)).::fa-archive</div>
+            <div id="view-arkib-11" class="hidden">MODULE_PLACEHOLDER::Borang Arkib 11/08 — Borang Permohonan Bagi Pemindahan Rekod Awam::Jana / urus borang rasmi Arkib 11/08 (Borang Permohonan Bagi Pemindahan Rekod Awam).::fa-archive</div>
+            <div id="view-arkib-13" class="hidden">MODULE_PLACEHOLDER::Borang Arkib 13/08 — Penentusahan Pemusnahan Rekod Kewangan Dan Perakaunan::Jana / urus borang rasmi Arkib 13/08 (Penentusahan Pemusnahan Rekod Kewangan Dan Perakaunan).::fa-archive</div>
+            <div id="view-aduan-kerosakan" class="hidden">MODULE_PLACEHOLDER::Aduan Kerosakan::Hantar aduan kerosakan aset baharu. Semak senarai penuh di tab "Laporan Kerosakan".::fa-exclamation-circle</div>
 
             <!-- ===================== DAFTAR ASET ===================== -->
             <div id="view-aset" class="hidden">
@@ -652,6 +734,112 @@
                         <div class="flex justify-end">
                             <button onclick="downloadAllDamagePDF()" class="bg-red-600 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-red-700"><i class="fas fa-file-pdf"></i> Muat Turun Semua Laporan (PDF)</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== REKOD ADUAN (APLIKASI PINTAR / ANDROID NATIVE) ===================== -->
+            <div id="view-aduan-native" class="hidden">
+                <div class="max-w-6xl mx-auto space-y-6">
+                    <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-xl text-[11px] text-indigo-700 leading-relaxed">
+                        <i class="fas fa-mobile-alt mr-1"></i> Rekod ini ditarik terus daripada koleksi Firestore <code>reports</code> yang dihantar oleh Guru / Bukan Guru melalui <b>Aplikasi Android DISPOSA ONE</b> (Aplikasi Pintar) — lengkap dengan gambar kerosakan yang dimuat naik. Senarai dikemaskini secara automatik apabila tab ini dibuka.
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border">
+                        <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-indigo-900">Rekod Aduan Melalui Aplikasi Pintar</h3>
+                                <p id="aduan-native-sync-status" class="text-[11px] text-gray-400 mt-1">Belum ditarik dari Firestore lagi.</p>
+                            </div>
+                            <div class="flex gap-2 items-center flex-wrap">
+                                <select id="aduan-native-filter-status" onchange="renderNativeReportsTable()" class="p-2 border rounded-lg text-sm">
+                                    <option value="">Semua Status</option>
+                                    <option value="Baharu">Baharu</option>
+                                    <option value="Dalam Tindakan">Dalam Tindakan</option>
+                                    <option value="Selesai">Selesai</option>
+                                </select>
+                                <span id="aduan-native-count" class="text-xs font-bold text-gray-400 bg-gray-50 px-3 py-1 rounded-full border whitespace-nowrap">0 aduan</span>
+                                <button onclick="printNativeReports()" class="flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-700 hover:bg-gray-800 text-white font-bold rounded-lg text-sm transition-all whitespace-nowrap"><i class="fas fa-print"></i> Cetak</button>
+                                <button onclick="exportNativeReportsData()" class="flex items-center justify-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-sm transition-all whitespace-nowrap"><i class="fas fa-file-export"></i> Export Data</button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto border rounded-xl mb-2">
+                            <table class="w-full text-sm" id="aduan-native-table">
+                                <thead class="bg-gray-100 uppercase text-[10px]">
+                                    <tr>
+                                        <th class="p-3 border-b text-center w-10">Bil.</th>
+                                        <th class="p-3 border-b text-left">Tarikh</th>
+                                        <th class="p-3 border-b text-left">Masa</th>
+                                        <th class="p-3 border-b text-left">Dilaporkan Oleh</th>
+                                        <th class="p-3 border-b text-left">Lokasi</th>
+                                        <th class="p-3 border-b text-left">Aset</th>
+                                        <th class="p-3 border-b text-left">Tahap</th>
+                                        <th class="p-3 border-b text-center">Gambar</th>
+                                        <th class="p-3 border-b text-left">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="aduan-native-tbody"></tbody>
+                            </table>
+                        </div>
+                        <p class="text-[11px] text-gray-400 print:hidden"><i class="fas fa-info-circle mr-1"></i>Klik ikon gambar untuk lihat foto penuh & kemaskini status aduan.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal: Butiran Aduan Native (gambar penuh + kemaskini status) -->
+            <div id="native-report-modal" class="hidden fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+                <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
+                    <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between">
+                        <h4 class="font-bold text-sm"><i class="fas fa-exclamation-circle mr-2"></i>Butiran Aduan</h4>
+                        <button onclick="closeNativeReportModal()" class="text-indigo-200 hover:text-white"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="p-6 max-h-[75vh] overflow-y-auto">
+                        <div id="native-report-photo-box" class="grid grid-cols-3 gap-2 mb-4">
+                            <span class="col-span-3 text-gray-400 text-xs text-center py-8 bg-gray-50 rounded-xl border">Tiada gambar disertakan</span>
+                        </div>
+
+                        <p class="text-[10px] font-bold text-indigo-500 uppercase mb-2 tracking-wide">A. Maklumat Pelapor (Auto)</p>
+                        <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Nama Guru</p><p id="nr-nama" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Jawatan</p><p id="nr-jawatan" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Emel / Telefon</p><p id="nr-emel" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Tarikh / Masa</p><p id="nr-tarikh-masa" class="font-semibold">-</p></div>
+                        </div>
+
+                        <p class="text-[10px] font-bold text-indigo-500 uppercase mb-2 tracking-wide">B &amp; C. Lokasi Dan Aset</p>
+                        <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Lokasi Kerosakan</p><p id="nr-lokasi" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Kategori Aset</p><p id="nr-kategori" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Nama Aset</p><p id="nr-aset" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">No. Inventori / Kod QR</p><p id="nr-inventori" class="font-semibold">-</p></div>
+                        </div>
+
+                        <p class="text-[10px] font-bold text-indigo-500 uppercase mb-2 tracking-wide">E &amp; F. Kerosakan</p>
+                        <div class="grid grid-cols-1 gap-3 text-sm mb-4">
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Tahap Kerosakan</p><p id="nr-tahap" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Keterangan Kerosakan</p><p id="nr-keterangan" class="text-gray-700">-</p></div>
+                        </div>
+
+                        <p class="text-[10px] font-bold text-indigo-500 uppercase mb-2 tracking-wide">G, H &amp; I. Keputusan &amp; Penghantaran</p>
+                        <div class="grid grid-cols-1 gap-3 text-sm">
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Cadangan Tindakan</p><p id="nr-tindakan" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Keutamaan Laporan</p><p id="nr-keutamaan" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Dihantar Kepada Pegawai</p><p id="nr-hantar" class="font-semibold">-</p></div>
+                        </div>
+
+                        <div class="mt-5 border-t pt-4">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Kemaskini Status Aduan</label>
+                            <div class="flex gap-2">
+                                <select id="nr-status-select" class="flex-1 p-3 bg-gray-50 border rounded-lg text-sm">
+                                    <option>Baharu</option><option>Dalam Tindakan</option><option>Selesai</option>
+                                </select>
+                                <button onclick="saveNativeReportStatus()" class="bg-indigo-600 text-white px-5 py-3 rounded-lg font-bold text-sm hover:bg-indigo-700">Kemaskini</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 border-t flex justify-between items-center bg-gray-50">
+                        <button onclick="deleteNativeReport()" class="text-red-500 hover:text-red-700 text-sm font-bold"><i class="fas fa-trash mr-1"></i> Padam Rekod</button>
+                        <button onclick="closeNativeReportModal()" class="px-5 py-2 rounded-lg border font-bold text-gray-500 hover:bg-gray-50 text-sm">Tutup</button>
                     </div>
                 </div>
             </div>
@@ -1310,6 +1498,7 @@ let schoolLogoBase64 = localStorage.getItem('disposa_school_logo') || null;
 let assetsList = JSON.parse(localStorage.getItem('disposa_assets_v1')) || [];
 let damageList = JSON.parse(localStorage.getItem('disposa_damage_v1')) || [];
 let usersList = JSON.parse(localStorage.getItem('disposa_users_v1')) || [];
+let nativeReportsList = JSON.parse(localStorage.getItem('disposa_native_reports_v1')) || [];
 let totalAsetChart = null;
 let pelupusanChart = null;
 let pelupusanBulanChart = null;
@@ -1363,6 +1552,7 @@ window.onload = () => {
     updateJawatanOptions();
     updateIdPreview();
     renderUsersTable();
+    renderNativeReportsTable();
     updateFbLastSyncDisplay();
     updateStats();
     renderRecords();
@@ -1376,21 +1566,31 @@ window.onload = () => {
 // ============ TABS ============
 const ALL_TABS = ['dashboard','ai','tetapan','aset','kerosakan','pelupusan','perakuan','surat','borang','borang2','borang12','list',
     'aset-manual','aset-pukal','status-pengesahan','kemaskini-pukal','status-pemadanan',
-    'harta-modal','aset-rendah','pengurusan-lokasi','pengguna',
-    'rpt-pa3','rpt-pa4','rpt-pa5','rpt-pa6','rpt-pa7','rpt-pa8','rpt-sukuan','rpt-pa11','aduan','manual'];
+    'harta-modal','aset-rendah','pengurusan-lokasi','pengguna','rpt-pa11',
+    'kewpa-1','kewpa-2','kewpa-3','kewpa-4','kewpa-5','kewpa-6','kewpa-7','kewpa-8','kewpa-9','kewpa-10','kewpa-11','kewpa-12','kewpa-13','kewpa-14','kewpa-17','kewpa-18','kewpa-19','kewpa-20',
+    'arkib-1','arkib-3','arkib-4','arkib-5','arkib-6','arkib-7','arkib-8','arkib-10','arkib-11','arkib-13',
+    'aduan-kerosakan','aduan-native'];
 
 const TAB_TITLES = {
-    dashboard:'Dashboard', ai:'Pembantu AI DISPOSA', tetapan:'Tetapan Sekolah', aset:'Daftar Aset',
-    kerosakan:'Laporan Kerosakan', pelupusan:'Pelupusan Aset (KEW.PA-14)', perakuan:'Perakuan Pelupusan (KEW.PA-16)',
-    surat:'Surat Iringan', borang:'Borang 9/08', borang2:'Borang 2/08', borang12:'Borang 12/08', list:'Senarai Rekod',
+    dashboard:'Dashboard', ai:'Setiausaha AI', tetapan:'Penetapan Sistem', aset:'Daftar Aset',
+    kerosakan:'Laporan Kerosakan', 'aduan-kerosakan':'Aduan Kerosakan', 'aduan-native':'Rekod Aduan (Aplikasi Pintar)',
+    pelupusan:'Kew.Pa-15 — Laporan Pemeriksaan Aset Alih (Pelupusan)', perakuan:'Kew.Pa-16 — Sijil Penyaksian Pemusnahan Aset Alih',
+    surat:'Surat Iringan — Jana Surat', borang:'Borang Arkib 9/08', borang2:'Borang Arkib 2/08', borang12:'Borang Arkib 12/08', list:'Senarai Rekod Tersimpan',
     'aset-manual':'Pendaftaran Aset - Manual', 'aset-pukal':'Pendaftaran Aset - Pukal',
     'status-pengesahan':'Status Pengesahan Aset', 'kemaskini-pukal':'Kemaskini Aset (Pukal)',
     'status-pemadanan':'Status Pemadanan Aset', 'harta-modal':'Senarai Aset - Harta Modal',
     'aset-rendah':'Senarai Aset - Bernilai Rendah', 'pengurusan-lokasi':'Pentadbiran - Pengurusan Lokasi',
-    pengguna:'Pendaftaran Guru & Bukan Guru',
-    'rpt-pa3':'KEW.PA-3', 'rpt-pa4':'KEW.PA-4', 'rpt-pa5':'KEW.PA-5', 'rpt-pa6':'KEW.PA-6',
-    'rpt-pa7':'KEW.PA-7', 'rpt-pa8':'KEW.PA-8', 'rpt-sukuan':'Laporan Sukuan Tahun',
-    'rpt-pa11':'KEW.PA-11', aduan:'Aduan Sistem', manual:'Manual Pengguna'
+    pengguna:'Pendaftaran Guru Dan Bukan Guru',
+    'rpt-pa11':'Kew.Pa-11 — Borang Pemeriksaan Aset',
+    'kewpa-1':'Kew.Pa-1', 'kewpa-2':'Kew.Pa-2', 'kewpa-3':'Kew.Pa-3', 'kewpa-4':'Kew.Pa-4',
+    'kewpa-5':'Kew.Pa-5', 'kewpa-6':'Kew.Pa-6', 'kewpa-7':'Kew.Pa-7', 'kewpa-8':'Kew.Pa-8',
+    'kewpa-9':'Kew.Pa-9', 'kewpa-10':'Kew.Pa-10', 'kewpa-11':'Kew.Pa-11', 'kewpa-12':'Kew.Pa-12',
+    'kewpa-13':'Kew.Pa-13', 'kewpa-14':'Kew.Pa-14', 'kewpa-17':'Kew.Pa-17', 'kewpa-18':'Kew.Pa-18',
+    'kewpa-19':'Kew.Pa-19', 'kewpa-20':'Kew.Pa-20',
+    'arkib-1':'Borang Arkib 1/08', 'arkib-3':'Borang Arkib 3/08', 'arkib-4':'Borang Arkib 4/08',
+    'arkib-5':'Borang Arkib 5/08', 'arkib-6':'Borang Arkib 6/08', 'arkib-7':'Borang Arkib 7/08',
+    'arkib-8':'Borang Arkib 8/08', 'arkib-10':'Borang Arkib 10/08', 'arkib-11':'Borang Arkib 11/08',
+    'arkib-13':'Borang Arkib 13/08'
 };
 
 function renderPlaceholderIfNeeded(tab) {
@@ -1420,6 +1620,13 @@ function toggleGroup(id) {
 }
 
 function switchTab(tab) {
+    if (tab === 'harta-modal' || tab === 'aset-rendah') {
+        const filterMap = { 'harta-modal': 'Harta Modal', 'aset-rendah': 'Inventori' };
+        switchTab('aset');
+        const sel = document.getElementById('aset-filter-kumpulan');
+        if (sel) { sel.value = filterMap[tab]; renderAssetsTable(); }
+        return;
+    }
     ALL_TABS.forEach(t => {
         const view = document.getElementById(`view-${t}`);
         const btn = document.getElementById(`btn-${t}`);
@@ -1434,6 +1641,7 @@ function switchTab(tab) {
     renderPlaceholderIfNeeded(tab);
     if (tab === 'kerosakan') populateAsetDropdown();
     if (tab === 'pengguna') { updateJawatanOptions(); updateIdPreview(); renderUsersTable(); }
+    if (tab === 'aduan-native') { renderNativeReportsTable(); pullNativeReports(); }
     if (tab === 'dashboard') { updateStats(); setTimeout(initDashboardChart, 30); }
 }
 
@@ -1962,6 +2170,265 @@ function renderDamageTable() {
 }
 
 // ============================================================
+//  MODUL REKOD ADUAN NATIVE (APLIKASI PINTAR / ANDROID)
+//  Ditarik daripada koleksi Firestore root "reports"
+//  Medan disesuaikan dengan borang Aduan Kerosakan Android (Seksyen A-I)
+// ============================================================
+let _currentNativeReportIdx = null;
+
+function nativeStatusBadge(status) {
+    const map = { 'Baharu': 'bg-blue-100 text-blue-700', 'Dalam Tindakan': 'bg-amber-100 text-amber-700', 'Selesai': 'bg-green-100 text-green-700' };
+    return `<span class="px-2 py-1 rounded-full text-[10px] font-bold ${map[status] || 'bg-gray-100 text-gray-600'}">${status || 'Baharu'}</span>`;
+}
+function tahapKerosakanBadge(tahap) {
+    const map = {
+        'Ringan': 'bg-green-100 text-green-700',
+        'Sederhana': 'bg-yellow-100 text-yellow-700',
+        'Teruk': 'bg-orange-100 text-orange-700',
+        'Tidak Boleh': 'bg-red-100 text-red-700',
+        'Tidak Boleh Guna': 'bg-red-100 text-red-700'
+    };
+    return `<span class="px-2 py-1 rounded-full text-[10px] font-bold ${map[tahap] || 'bg-gray-100 text-gray-600'}">${tahap || '-'}</span>`;
+}
+function setNativeSyncStatus(msg, isError) {
+    const el = document.getElementById('aduan-native-sync-status');
+    if (!el) return;
+    el.className = `text-[11px] mt-1 ${isError ? 'text-red-500' : 'text-emerald-600'}`;
+    el.innerText = msg;
+}
+function splitTarikhMasa(report) {
+    // A. Maklumat Pelapor (Auto) — Android papar sebagai satu rentetan "07/07/2026 • 23:07:40"
+    if (report.tarikh || report.masa) {
+        return { tarikh: report.tarikh || '-', masa: report.masa || '-' };
+    }
+    if (report.tarikhMasa) {
+        const parts = String(report.tarikhMasa).split(/•|,|\u2022/).map(s => s.trim()).filter(Boolean);
+        if (parts.length >= 2) return { tarikh: parts[0], masa: parts[1] };
+        if (parts.length === 1) return { tarikh: parts[0], masa: '-' };
+    }
+    const ts = report.createdAt || report.timestamp;
+    if (ts) {
+        let d;
+        if (ts.toDate) d = ts.toDate(); // Firestore Timestamp
+        else if (ts.seconds) d = new Date(ts.seconds * 1000);
+        else d = new Date(ts);
+        if (!isNaN(d.getTime())) {
+            return { tarikh: d.toLocaleDateString('ms-MY'), masa: d.toLocaleTimeString('en-US') };
+        }
+    }
+    return { tarikh: '-', masa: '-' };
+}
+async function pullNativeReports() {
+    if (!FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey === 'GANTI_DENGAN_API_KEY_ANDA') {
+        setNativeSyncStatus('Menunggu konfigurasi Firebase untuk menarik aduan dari Aplikasi Android.', false);
+        return;
+    }
+    setNativeSyncStatus('Menarik aduan terkini dari Firestore...', false);
+    try {
+        const { db } = initFirebaseIfNeeded();
+        const snap = await db.collection('reports').orderBy('createdAt', 'desc').get().catch(() => db.collection('reports').get());
+        const list = [];
+        snap.forEach(doc => {
+            const d = doc.data();
+            // Gambar Kerosakan (Maksimum 3) — sokong array (gambar/gambarList/images) atau medan tunggal gambar1/2/3
+            let gambarList = [];
+            if (Array.isArray(d.gambar)) gambarList = d.gambar;
+            else if (Array.isArray(d.gambarList)) gambarList = d.gambarList;
+            else if (Array.isArray(d.images)) gambarList = d.images;
+            else {
+                ['gambar1', 'gambar2', 'gambar3', 'gambarUrl', 'imageUrl'].forEach(k => { if (d[k]) gambarList.push(d[k]); });
+            }
+            list.push({
+                _docId: doc.id,
+                // A. Maklumat Pelapor (Auto)
+                namaGuru: d.namaGuru || d.nama || d.guruNama || 'Tidak diketahui',
+                guruId: d.guruId || '',
+                jawatan: d.jawatan || '-',
+                emel: d.emel || d.telefon || d.noTelefon || '-',
+                // B. Lokasi Kerosakan
+                lokasi: d.lokasi || '-',
+                // C. Kategori & Jenis Aset
+                kategoriAset: d.kategoriAset || d.kategori || '-',
+                namaAset: d.namaAset || d.nama_aset || d.jenisAset || '-',
+                noInventori: d.noInventori || d.kodQR || d.no_inventori || '',
+                // D. Gambar Kerosakan
+                gambarList,
+                // E. Tahap Kerosakan
+                tahapKerosakan: d.tahapKerosakan || d.tahap || '-',
+                // F. Keterangan Kerosakan
+                keterangan: d.keterangan || d.catatan || '-',
+                // G, H, I. Keputusan & Penghantaran
+                cadanganTindakan: d.cadanganTindakan || d.tindakan || '-',
+                keutamaan: d.keutamaan || d.keutamaanLaporan || '-',
+                hantarKepada: d.hantarKepada || d.pegawai || d.hantarKepadaPegawai || '-',
+                // Status pemprosesan (bukan sebahagian borang, digunakan admin)
+                status: d.status || 'Baharu',
+                tarikh: d.tarikh || '',
+                masa: d.masa || '',
+                tarikhMasa: d.tarikhMasa || '',
+                createdAt: d.createdAt || d.timestamp || null
+            });
+        });
+        nativeReportsList = list;
+        localStorage.setItem('disposa_native_reports_v1', JSON.stringify(nativeReportsList));
+        renderNativeReportsTable();
+        setNativeSyncStatus(`Berjaya ditarik: ${list.length} aduan dari koleksi "reports" (kemaskini terakhir: ${new Date().toLocaleString('ms-MY')}).`, false);
+    } catch (err) {
+        setNativeSyncStatus(`Gagal menarik aduan: ${err.message}`, true);
+    }
+}
+function renderNativeReportsTable() {
+    const tbody = document.getElementById('aduan-native-tbody');
+    if (!tbody) return;
+    const filterStatus = document.getElementById('aduan-native-filter-status')?.value || '';
+    const filtered = nativeReportsList.filter(r => !filterStatus || r.status === filterStatus);
+    tbody.innerHTML = filtered.length ? '' : `<tr><td colspan="9" class="p-8 text-center text-gray-400">Tiada aduan lagi daripada Aplikasi Android.</td></tr>`;
+    filtered.forEach((r, i) => {
+        const idx = nativeReportsList.indexOf(r);
+        const { tarikh, masa } = splitTarikhMasa(r);
+        const gambarCount = (r.gambarList || []).length;
+        const row = document.createElement('tr');
+        row.className = 'cursor-pointer hover:bg-gray-50';
+        row.onclick = () => showNativeReportDetail(idx);
+        row.innerHTML = `<td class="p-3 border-b text-center text-xs font-bold text-gray-400">${i + 1}</td>
+            <td class="p-3 border-b text-xs">${tarikh}</td>
+            <td class="p-3 border-b text-xs">${masa}</td>
+            <td class="p-3 border-b text-sm font-semibold">${r.namaGuru}</td>
+            <td class="p-3 border-b text-xs">${r.lokasi}</td>
+            <td class="p-3 border-b text-xs">${r.namaAset}${r.kategoriAset && r.kategoriAset !== '-' ? ' (' + r.kategoriAset + ')' : ''}</td>
+            <td class="p-3 border-b">${tahapKerosakanBadge(r.tahapKerosakan)}</td>
+            <td class="p-3 border-b text-center">${gambarCount ? `<i class="fas fa-image text-indigo-500" title="${gambarCount} gambar"></i> <span class="text-[10px] text-gray-400">${gambarCount}</span>` : '<span class="text-gray-300 text-xs">-</span>'}</td>
+            <td class="p-3 border-b">${nativeStatusBadge(r.status)}</td>`;
+        tbody.appendChild(row);
+    });
+    document.getElementById('aduan-native-count').innerText = `${filtered.length} / ${nativeReportsList.length} aduan`;
+}
+function printNativeReports() {
+    if (!nativeReportsList.length) { alert('Tiada rekod aduan untuk dicetak.'); return; }
+    const filterStatus = document.getElementById('aduan-native-filter-status')?.value || '';
+    const filtered = nativeReportsList.filter(r => !filterStatus || r.status === filterStatus);
+    const rows = filtered.map((r, i) => {
+        const { tarikh, masa } = splitTarikhMasa(r);
+        return `<tr>
+            <td style="text-align:center;">${i + 1}</td>
+            <td>${tarikh}</td><td>${masa}</td>
+            <td>${r.namaGuru}</td><td>${r.jawatan}</td><td>${r.lokasi}</td>
+            <td>${r.namaAset} (${r.kategoriAset})</td>
+            <td>${r.tahapKerosakan}</td>
+            <td>${(r.gambarList || []).length}</td>
+            <td>${r.status}</td>
+        </tr>`;
+    }).join('');
+    const namaSekolah = document.getElementById('h_nama_sekolah')?.value || '';
+    const w = window.open('', '_blank');
+    w.document.write(`<html><head><title>Rekod Aduan (Aplikasi Pintar)</title>
+        <style>
+            body{font-family:Arial,sans-serif;padding:24px;}
+            h2{margin-bottom:2px;} p.sub{color:#666;margin-top:0;font-size:12px;}
+            table{width:100%;border-collapse:collapse;font-size:11px;margin-top:16px;}
+            th,td{border:1px solid #ccc;padding:6px 8px;text-align:left;}
+            th{background:#f3f4f6;text-transform:uppercase;font-size:9px;}
+        </style></head><body>
+        <h2>Rekod Aduan Melalui Aplikasi Pintar</h2>
+        <p class="sub">${namaSekolah} — Dijana pada ${new Date().toLocaleString('ms-MY')}</p>
+        <table><thead><tr><th>Bil.</th><th>Tarikh</th><th>Masa</th><th>Dilaporkan Oleh</th><th>Jawatan</th><th>Lokasi</th><th>Aset (Kategori)</th><th>Tahap</th><th>Bil. Gambar</th><th>Status</th></tr></thead>
+        <tbody>${rows}</tbody></table>
+        </body></html>`);
+    w.document.close();
+    w.focus();
+    setTimeout(() => w.print(), 300);
+}
+function exportNativeReportsData() {
+    if (!nativeReportsList.length) { alert('Tiada rekod aduan untuk dieksport.'); return; }
+    const filterStatus = document.getElementById('aduan-native-filter-status')?.value || '';
+    const filtered = nativeReportsList.filter(r => !filterStatus || r.status === filterStatus);
+    const headers = ['Bil.', 'Tarikh', 'Masa', 'Nama Guru', 'Jawatan', 'Emel/Telefon', 'Lokasi', 'Kategori Aset', 'Nama Aset', 'No. Inventori', 'Tahap Kerosakan', 'Keterangan', 'Cadangan Tindakan', 'Keutamaan', 'Hantar Kepada', 'Bil. Gambar', 'Pautan Gambar', 'Status'];
+    const csvRows = [headers.join(',')];
+    filtered.forEach((r, i) => {
+        const { tarikh, masa } = splitTarikhMasa(r);
+        const esc = (v) => `"${String(v || '').replace(/"/g, '""')}"`;
+        csvRows.push([
+            i + 1, tarikh, masa, esc(r.namaGuru), esc(r.jawatan), esc(r.emel), esc(r.lokasi),
+            esc(r.kategoriAset), esc(r.namaAset), esc(r.noInventori), esc(r.tahapKerosakan),
+            esc(r.keterangan), esc(r.cadanganTindakan), esc(r.keutamaan), esc(r.hantarKepada),
+            (r.gambarList || []).length, esc((r.gambarList || []).join(' | ')), esc(r.status)
+        ].join(','));
+    });
+    const csvContent = '\uFEFF' + csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Rekod_Aduan_Aplikasi_Pintar_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+function showNativeReportDetail(idx) {
+    const r = nativeReportsList[idx];
+    if (!r) return;
+    _currentNativeReportIdx = idx;
+    const { tarikh, masa } = splitTarikhMasa(r);
+    document.getElementById('nr-nama').innerText = r.namaGuru;
+    document.getElementById('nr-jawatan').innerText = r.jawatan;
+    document.getElementById('nr-emel').innerText = r.emel;
+    document.getElementById('nr-tarikh-masa').innerText = `${tarikh}  •  ${masa}`;
+    document.getElementById('nr-lokasi').innerText = r.lokasi;
+    document.getElementById('nr-kategori').innerText = r.kategoriAset;
+    document.getElementById('nr-aset').innerText = r.namaAset;
+    document.getElementById('nr-inventori').innerText = r.noInventori || '-';
+    document.getElementById('nr-tahap').innerHTML = tahapKerosakanBadge(r.tahapKerosakan);
+    document.getElementById('nr-keterangan').innerText = r.keterangan;
+    document.getElementById('nr-tindakan').innerText = r.cadanganTindakan;
+    document.getElementById('nr-keutamaan').innerText = r.keutamaan;
+    document.getElementById('nr-hantar').innerText = r.hantarKepada;
+    document.getElementById('nr-status-select').value = r.status || 'Baharu';
+    const photoBox = document.getElementById('native-report-photo-box');
+    const gambarList = r.gambarList || [];
+    photoBox.innerHTML = gambarList.length
+        ? gambarList.map(url => `<img src="${url}" class="w-full h-24 object-cover rounded-lg border cursor-pointer" onclick="window.open('${url}', '_blank')" alt="Gambar aduan">`).join('')
+        : `<span class="col-span-3 text-gray-400 text-xs text-center py-8 bg-gray-50 rounded-xl border">Tiada gambar disertakan</span>`;
+    document.getElementById('native-report-modal').classList.remove('hidden');
+}
+function closeNativeReportModal() {
+    document.getElementById('native-report-modal').classList.add('hidden');
+    _currentNativeReportIdx = null;
+}
+async function saveNativeReportStatus() {
+    if (_currentNativeReportIdx === null) return;
+    const r = nativeReportsList[_currentNativeReportIdx];
+    const newStatus = document.getElementById('nr-status-select').value;
+    r.status = newStatus;
+    localStorage.setItem('disposa_native_reports_v1', JSON.stringify(nativeReportsList));
+    renderNativeReportsTable();
+    try {
+        const { db } = initFirebaseIfNeeded();
+        await db.collection('reports').doc(r._docId).update({ status: newStatus });
+        setNativeSyncStatus(`Status aduan dikemaskini kepada "${newStatus}" (turut disegerakkan ke Firestore).`, false);
+    } catch (err) {
+        setNativeSyncStatus(`Status dikemaskini tempatan sahaja — gagal segerak ke Firestore (${err.message}).`, true);
+    }
+    closeNativeReportModal();
+}
+async function deleteNativeReport() {
+    if (_currentNativeReportIdx === null) return;
+    if (!confirm('Padam rekod aduan ini? Tindakan ini tidak boleh dibatalkan.')) return;
+    const r = nativeReportsList[_currentNativeReportIdx];
+    nativeReportsList.splice(_currentNativeReportIdx, 1);
+    localStorage.setItem('disposa_native_reports_v1', JSON.stringify(nativeReportsList));
+    renderNativeReportsTable();
+    try {
+        const { db } = initFirebaseIfNeeded();
+        await db.collection('reports').doc(r._docId).delete();
+        setNativeSyncStatus('Rekod aduan turut dipadam dari Firestore.', false);
+    } catch (err) {
+        setNativeSyncStatus(`Dipadam tempatan sahaja — gagal padam di Firestore (${err.message}).`, true);
+    }
+    closeNativeReportModal();
+}
+
+// ============================================================
 //  MODUL PENDAFTARAN GURU & BUKAN GURU (APLIKASI ANDROID)
 // ============================================================
 const JAWATAN_OPTIONS = {
@@ -2254,13 +2721,13 @@ function downloadUsersRegisterPDF() {
 //  SCHOOL_ID yang SAMA supaya data disegerakkan dengan betul.
 // ============================================================
 const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyAAo-UK674n5jB_fVyTe0IcziPtQQx3_44",
-    authDomain: "disposa-one.firebaseapp.com",
-    projectId: "disposa-one",
-    storageBucket: "disposa-one.firebasestorage.app",
-    messagingSenderId: "970458399440",
-    appId: "1:970458399440:web:24b43fae7b0d29141554d5",
-    measurementId: "G-3BS1CGRK78" // pilihan
+    apiKey: "GANTI_DENGAN_API_KEY_ANDA",
+    authDomain: "nama-projek.firebaseapp.com",
+    projectId: "nama-projek",
+    storageBucket: "nama-projek.appspot.com",
+    messagingSenderId: "000000000000",
+    appId: "1:000000000000:web:0000000000000000000000",
+    measurementId: "" // pilihan
 };
 const SCHOOL_ID = "SKBT"; // ID sekolah / tenant - samakan dengan Aplikasi Android
 
