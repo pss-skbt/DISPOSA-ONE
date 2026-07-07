@@ -162,7 +162,10 @@
     <main class="flex-1 overflow-y-auto">
         <header class="bg-white shadow-sm border-b px-8 py-4 flex justify-between items-center sticky top-0 z-10">
             <h2 id="tab-title" class="text-xl font-semibold text-gray-700">Dashboard</h2>
-            <div id="current-date" class="text-xs text-gray-500 font-medium"></div>
+            <div class="text-right">
+                <div id="current-date" class="text-xs text-gray-500 font-medium"></div>
+                <div id="current-time" class="text-xs text-gray-400 font-semibold mt-0.5"></div>
+            </div>
         </header>
 
         <div class="p-8">
@@ -1290,14 +1293,23 @@ function handleLogin(e) {
 }
 function handleLogout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
 
+function updateHeaderClock() {
+    const now = new Date();
+    const dateEl = document.getElementById('current-date');
+    const timeEl = document.getElementById('current-time');
+    if (dateEl) dateEl.innerText = new Intl.DateTimeFormat('ms-MY', { dateStyle: 'full' }).format(now);
+    if (timeEl) timeEl.innerText = now.toLocaleTimeString('en-US');
+    const welcomeEl = document.getElementById('welcome-datetime');
+    if (welcomeEl) welcomeEl.innerText = new Intl.DateTimeFormat('en-GB', { day:'2-digit', month:'2-digit', year:'numeric' }).format(now) + ' ' + now.toLocaleTimeString('en-US');
+}
+
 window.onload = () => {
     if (sessionStorage.getItem('isLoggedIn') === 'true') {
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('main-app').classList.remove('hidden');
     }
-    document.getElementById('current-date').innerText = new Intl.DateTimeFormat('ms-MY', { dateStyle: 'full' }).format(new Date());
-    const welcomeEl = document.getElementById('welcome-datetime');
-    if (welcomeEl) welcomeEl.innerText = new Intl.DateTimeFormat('en-GB', { day:'2-digit', month:'2-digit', year:'numeric' }).format(new Date()) + ' ' + new Date().toLocaleTimeString('en-US');
+    updateHeaderClock();
+    setInterval(updateHeaderClock, 1000);
     if (schoolLogoBase64) updateLogoPreview(schoolLogoBase64);
     const savedKey = localStorage.getItem('disposa_ai_key') || '';
     const savedModel = localStorage.getItem('disposa_ai_model') || 'claude-sonnet-4-5';
