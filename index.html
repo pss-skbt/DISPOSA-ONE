@@ -1107,10 +1107,15 @@
                     <div class="bg-white p-8 rounded-xl shadow-sm border">
                         <h3 class="text-lg font-bold mb-6 border-b pb-2 text-indigo-900 flex items-center"><i class="fas fa-user-plus mr-2 text-indigo-600"></i> Daftar / Kemaskini Pengguna Aplikasi</h3>
                         <input type="hidden" id="u_edit_index" value="">
+                        <input type="hidden" id="u_tarikh_daftar" value="">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                             <div class="md:col-span-2">
                                 <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Nama Penuh</label>
                                 <input type="text" id="u_nama" class="w-full p-3 bg-gray-50 border rounded-lg text-sm" placeholder="Contoh: Ahmad bin Ismail">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-indigo-500 uppercase mb-1 block">ID Guru <span class="text-gray-400 normal-case">(Auto Jana)</span></label>
+                                <input type="text" id="u_id_preview" readonly class="w-full p-3 bg-indigo-50 border border-indigo-200 rounded-lg text-sm font-bold text-indigo-700">
                             </div>
                             <div>
                                 <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">No. Kad Pengenalan</label>
@@ -1118,7 +1123,7 @@
                             </div>
                             <div>
                                 <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Kategori Pengguna</label>
-                                <select id="u_kategori" onchange="updateJawatanOptions()" class="w-full p-3 bg-gray-50 border rounded-lg text-sm font-bold">
+                                <select id="u_kategori" onchange="updateJawatanOptions(); updateIdPreview();" class="w-full p-3 bg-gray-50 border rounded-lg text-sm font-bold">
                                     <option value="Guru">Guru</option>
                                     <option value="Bukan Guru">Bukan Guru (Kakitangan Sokongan)</option>
                                 </select>
@@ -1153,6 +1158,12 @@
                                 <select id="u_status" class="w-full p-3 bg-gray-50 border rounded-lg text-sm">
                                     <option>Aktif</option><option>Tidak Aktif</option><option>Menunggu Pengesahan</option>
                                 </select>
+                            </div>
+                            <div class="flex items-end">
+                                <label class="flex items-center gap-2 cursor-pointer bg-emerald-50 border border-emerald-100 rounded-lg p-3 w-full">
+                                    <input type="checkbox" id="u_benarkan_login" checked class="w-4 h-4 accent-emerald-600">
+                                    <span class="text-sm font-semibold text-emerald-700">Benarkan Log Masuk Aplikasi</span>
+                                </label>
                             </div>
                         </div>
                         <div class="flex justify-end gap-3">
@@ -1199,6 +1210,8 @@
                                         <th class="p-3 border-b text-left">Peranan</th>
                                         <th class="p-3 border-b text-left">Telefon</th>
                                         <th class="p-3 border-b text-left">Status</th>
+                                        <th class="p-3 border-b text-center">Log Masuk</th>
+                                        <th class="p-3 border-b text-left">Tarikh Daftar</th>
                                         <th class="p-3 border-b text-right">Aksi</th>
                                     </tr>
                                 </thead>
@@ -1296,6 +1309,7 @@ window.onload = () => {
     renderDamageTable();
     populateAsetDropdown();
     updateJawatanOptions();
+    updateIdPreview();
     renderUsersTable();
     updateFbLastSyncDisplay();
     updateStats();
@@ -1367,7 +1381,7 @@ function switchTab(tab) {
     document.getElementById('tab-title').innerText = TAB_TITLES[tab] || tab;
     renderPlaceholderIfNeeded(tab);
     if (tab === 'kerosakan') populateAsetDropdown();
-    if (tab === 'pengguna') { updateJawatanOptions(); renderUsersTable(); }
+    if (tab === 'pengguna') { updateJawatanOptions(); updateIdPreview(); renderUsersTable(); }
     if (tab === 'dashboard') { updateStats(); setTimeout(initDashboardChart, 30); }
 }
 
@@ -1857,10 +1871,20 @@ function updateJawatanOptions() {
 }
 function generateUserAppId(kategori) {
     const kod = (document.getElementById('d_kod_ptj')?.value || 'SKBT').toUpperCase();
-    const year = new Date().getFullYear();
     const prefix = kategori === 'Guru' ? 'GR' : 'BG';
     const countSame = usersList.filter(u => u.kategori === kategori).length + 1;
-    return `${kod}/${prefix}/${year}/${String(countSame).padStart(4, '0')}`;
+    return `${prefix}${String(countSame).padStart(4, '0')}`;
+}
+function updateIdPreview() {
+    const previewEl = document.getElementById('u_id_preview');
+    if (!previewEl) return;
+    const editIdx = document.getElementById('u_edit_index').value;
+    if (editIdx !== '' && usersList[editIdx]) {
+        previewEl.value = usersList[editIdx].id_aplikasi;
+    } else {
+        const kategori = document.getElementById('u_kategori')?.value || 'Guru';
+        previewEl.value = generateUserAppId(kategori);
+    }
 }
 function clearUserForm() {
     ['u_nama','u_no_kp','u_telefon','u_emel','u_lokasi'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
@@ -1868,13 +1892,17 @@ function clearUserForm() {
     updateJawatanOptions();
     document.getElementById('u_peranan').selectedIndex = 0;
     document.getElementById('u_status').selectedIndex = 0;
+    document.getElementById('u_benarkan_login').checked = true;
     document.getElementById('u_edit_index').value = '';
+    document.getElementById('u_tarikh_daftar').value = '';
+    updateIdPreview();
 }
 function addUser() {
     const nama = document.getElementById('u_nama').value.trim();
     if (!nama) { alert('Sila isi Nama Penuh pengguna.'); return; }
     const kategori = document.getElementById('u_kategori').value;
     const editIdx = document.getElementById('u_edit_index').value;
+    const tarikhDaftarHidden = document.getElementById('u_tarikh_daftar').value;
     const data = {
         id_aplikasi: editIdx !== '' ? usersList[editIdx].id_aplikasi : generateUserAppId(kategori),
         nama, no_kp: document.getElementById('u_no_kp').value, kategori,
@@ -1883,7 +1911,9 @@ function addUser() {
         emel: document.getElementById('u_emel').value,
         lokasi: document.getElementById('u_lokasi').value,
         peranan: document.getElementById('u_peranan').value,
-        status: document.getElementById('u_status').value
+        status: document.getElementById('u_status').value,
+        benarkan_login: document.getElementById('u_benarkan_login').checked,
+        tarikh_daftar: editIdx !== '' ? (usersList[editIdx].tarikh_daftar || tarikhDaftarHidden || new Date().toLocaleDateString('ms-MY')) : new Date().toLocaleDateString('ms-MY')
     };
     if (editIdx !== '') { usersList[editIdx] = data; } else { usersList.unshift(data); }
     localStorage.setItem('disposa_users_v1', JSON.stringify(usersList));
@@ -1902,7 +1932,10 @@ function editUser(idx) {
     document.getElementById('u_lokasi').value = u.lokasi;
     document.getElementById('u_peranan').value = u.peranan;
     document.getElementById('u_status').value = u.status;
+    document.getElementById('u_benarkan_login').checked = u.benarkan_login !== false;
+    document.getElementById('u_tarikh_daftar').value = u.tarikh_daftar || '';
     document.getElementById('u_edit_index').value = idx;
+    updateIdPreview();
     switchTab('pengguna');
     window.scrollTo(0, 0);
 }
@@ -1916,13 +1949,18 @@ function userStatusBadge(status) {
     const map = { 'Aktif': 'bg-green-100 text-green-700', 'Tidak Aktif': 'bg-red-100 text-red-700', 'Menunggu Pengesahan': 'bg-amber-100 text-amber-700' };
     return `<span class="px-2 py-1 rounded-full text-[10px] font-bold ${map[status] || 'bg-gray-100 text-gray-600'}">${status || '-'}</span>`;
 }
+function loginBadge(benarkan) {
+    return benarkan === false
+        ? `<span class="px-2 py-1 rounded-full text-[10px] font-bold bg-red-100 text-red-700"><i class="fas fa-times mr-1"></i>Tidak</span>`
+        : `<span class="px-2 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700"><i class="fas fa-check mr-1"></i>Ya</span>`;
+}
 function renderUsersTable() {
     const q = (document.getElementById('pengguna-search')?.value || '').toLowerCase();
     const kategoriFilter = document.getElementById('pengguna-filter-kategori')?.value || '';
     const tbody = document.getElementById('pengguna-tbody');
     if (!tbody) return;
     const filtered = usersList.filter(u => (!q || (u.nama + u.id_aplikasi + u.jawatan).toLowerCase().includes(q)) && (!kategoriFilter || u.kategori === kategoriFilter));
-    tbody.innerHTML = filtered.length ? '' : `<tr><td colspan="8" class="p-8 text-center text-gray-400">Tiada pengguna didaftarkan lagi</td></tr>`;
+    tbody.innerHTML = filtered.length ? '' : `<tr><td colspan="10" class="p-8 text-center text-gray-400">Tiada pengguna didaftarkan lagi</td></tr>`;
     filtered.forEach((u) => {
         const idx = usersList.indexOf(u);
         const row = document.createElement('tr');
@@ -1933,6 +1971,8 @@ function renderUsersTable() {
             <td class="p-3 border-b text-xs">${u.peranan || '-'}</td>
             <td class="p-3 border-b text-xs">${u.telefon || '-'}</td>
             <td class="p-3 border-b">${userStatusBadge(u.status)}</td>
+            <td class="p-3 border-b text-center">${loginBadge(u.benarkan_login)}</td>
+            <td class="p-3 border-b text-xs">${u.tarikh_daftar || '-'}</td>
             <td class="p-3 border-b text-right whitespace-nowrap">
                 <button onclick="showUserQr(${idx})" class="text-indigo-500 hover:text-indigo-700 mr-2" title="Kod QR Log Masuk"><i class="fas fa-qrcode"></i></button>
                 <button onclick="editUser(${idx})" class="text-blue-500 hover:text-blue-700 mr-2" title="Edit"><i class="fas fa-edit"></i></button>
@@ -1949,6 +1989,10 @@ function renderUsersTable() {
 // ---- Kod QR Log Masuk Aplikasi ----
 function showUserQr(idx) {
     const u = usersList[idx];
+    if (u.benarkan_login === false) {
+        alert('Log masuk aplikasi untuk pengguna ini dinyahaktifkan (Benarkan Log Masuk = Tidak). Aktifkan semula sebelum menjana kod QR.');
+        return;
+    }
     document.getElementById('user-qr-nama').innerText = u.nama;
     document.getElementById('user-qr-id').innerText = u.id_aplikasi;
     document.getElementById('user-qr-jawatan').innerText = `${u.kategori} — ${u.jawatan || ''}`;
@@ -1990,9 +2034,9 @@ function downloadUsersRegisterPDF() {
     setFont('normal', 8); doc.text('Dijana pada ' + new Date().toLocaleDateString('ms-MY'), CX, 25, { align: 'center' });
 
     let y = 32;
-    const cols = [30, 45, 26, 40, 34, 28, 30, 24];
+    const cols = [26, 40, 22, 34, 30, 24, 35, 20, 18, 24];
     const colX = [ML]; cols.forEach((w, i) => colX.push(colX[i] + w));
-    const headers = ['ID Aplikasi','Nama','Kategori','Jawatan','Peranan','Telefon','E-mel','Status'];
+    const headers = ['ID Aplikasi','Nama','Kategori','Jawatan','Peranan','Telefon','E-mel','Status','Log Masuk','Tarikh Daftar'];
     const HDR_H = 8, ROW_H = 7;
     doc.rect(ML, y, TW, HDR_H);
     cols.forEach((_, i) => { if (i > 0) doc.line(colX[i], y, colX[i], y + HDR_H); });
@@ -2005,7 +2049,7 @@ function downloadUsersRegisterPDF() {
         if (y + ROW_H > PH - 15) { doc.addPage(); y = 15; doc.rect(ML, y, TW, HDR_H); cols.forEach((_, i) => { if (i > 0) doc.line(colX[i], y, colX[i], y + HDR_H); }); setFont('bold', 7.5); headers.forEach((h, i) => doc.text(h, colX[i] + 2, y + 5.5)); setFont('normal', 7); y += HDR_H; }
         doc.rect(ML, y, TW, ROW_H);
         cols.forEach((_, i) => { if (i > 0) doc.line(colX[i], y, colX[i], y + ROW_H); });
-        const vals = [u.id_aplikasi, u.nama, u.kategori, u.jawatan, u.peranan, u.telefon, u.emel, u.status];
+        const vals = [u.id_aplikasi, u.nama, u.kategori, u.jawatan, u.peranan, u.telefon, u.emel, u.status, u.benarkan_login === false ? 'Tidak' : 'Ya', u.tarikh_daftar];
         vals.forEach((v, i) => { const lines = doc.splitTextToSize(String(v || '-'), cols[i] - 3); doc.text(lines[0] || '-', colX[i] + 2, y + 4.8); });
         y += ROW_H;
     });
