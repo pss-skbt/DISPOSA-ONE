@@ -1210,6 +1210,7 @@
                             <button onclick="clearUserForm()" class="px-6 py-3 rounded-xl font-bold text-gray-500 border hover:bg-gray-50">Kosongkan</button>
                             <button onclick="addUser()" class="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-indigo-700"><i class="fas fa-save"></i> Simpan Pengguna</button>
                         </div>
+                        <div id="pengguna-sync-status" class="text-[11px] text-gray-400 mt-3 text-right"></div>
                     </div>
 
                     <div class="bg-white p-8 rounded-xl shadow-sm border">
@@ -2002,6 +2003,75 @@ function clearUserForm() {
     document.getElementById('u_tarikh_daftar').value = '';
     updateIdPreview();
 }
+// ---- Segerak terus ke Firestore collection "teachers" (dibaca oleh Android Native) ----
+function fbStatusMYToAndroid(statusMY) {
+    const map = { 'Aktif': 'aktif', 'Tidak Aktif': 'tidak aktif', 'Menunggu Pengesahan': 'menunggu pengesahan' };
+    return map[statusMY] || 'tidak aktif';
+}
+function fbStatusAndroidToMY(statusAndroid) {
+    const map = { 'aktif': 'Aktif', 'tidak aktif': 'Tidak Aktif', 'menunggu pengesahan': 'Menunggu Pengesahan' };
+    return map[statusAndroid] || 'Tidak Aktif';
+}
+function buildTeacherFirestoreDoc(userData) {
+    return {
+        guruId: userData.id_aplikasi,
+        nama: userData.nama,
+        namaSearch: (userData.nama || '').trim().toLowerCase(),
+        jawatan: userData.jawatan || '',
+        lokasi: userData.lokasi || '',
+        telefon: userData.telefon || '',
+        emel: userData.emel || '',
+        peranan: userData.peranan || '',
+        kategori: userData.kategori,
+        role: userData.kategori === 'Guru' ? 'guru' : 'bukan_guru',
+        status: fbStatusMYToAndroid(userData.status),
+        login: userData.benarkan_login !== false,
+        tarikhDaftar: userData.tarikh_daftar || ''
+    };
+}
+function firestoreTeacherDocToLocal(docData, docId) {
+    return {
+        id_aplikasi: docData.guruId || docId,
+        nama: docData.nama || '',
+        no_kp: docData.no_kp || '',
+        kategori: docData.kategori || (docData.role === 'guru' ? 'Guru' : 'Bukan Guru'),
+        jawatan: docData.jawatan || '',
+        telefon: docData.telefon || '',
+        emel: docData.emel || '',
+        lokasi: docData.lokasi || '',
+        peranan: docData.peranan || '',
+        status: fbStatusAndroidToMY(docData.status),
+        benarkan_login: docData.login !== false,
+        tarikh_daftar: docData.tarikhDaftar || ''
+    };
+}
+function setPenggunaSyncStatus(msg, isError) {
+    const el = document.getElementById('pengguna-sync-status');
+    if (!el) return;
+    el.className = `text-[11px] mt-3 text-right ${isError ? 'text-red-500' : 'text-emerald-600'}`;
+    el.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'} mr-1"></i> ${msg}`;
+}
+async function syncTeacherToFirestore(userData, isNew) {
+    try {
+        const { db } = initFirebaseIfNeeded();
+        const docData = buildTeacherFirestoreDoc(userData);
+        if (isNew) docData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        await db.collection('teachers').doc(userData.id_aplikasi).set(docData, { merge: true });
+        setPenggunaSyncStatus(`Disegerakkan ke Firestore (koleksi "teachers", ID: ${userData.id_aplikasi}).`, false);
+    } catch (err) {
+        setPenggunaSyncStatus(`Data disimpan tempatan sahaja — belum sampai ke Firestore (${err.message}).`, true);
+    }
+}
+async function deleteTeacherFromFirestore(idAplikasi) {
+    try {
+        const { db } = initFirebaseIfNeeded();
+        await db.collection('teachers').doc(idAplikasi).delete();
+        setPenggunaSyncStatus(`Pengguna ${idAplikasi} turut dipadam dari Firestore.`, false);
+    } catch (err) {
+        setPenggunaSyncStatus(`Dipadam tempatan sahaja — gagal padam di Firestore (${err.message}).`, true);
+    }
+}
+
 function addUser() {
     const nama = document.getElementById('u_nama').value.trim();
     if (!nama) { alert('Sila isi Nama Penuh pengguna.'); return; }
@@ -2022,6 +2092,8 @@ function addUser() {
     };
     if (editIdx !== '') { usersList[editIdx] = data; } else { usersList.unshift(data); }
     localStorage.setItem('disposa_users_v1', JSON.stringify(usersList));
+    setPenggunaSyncStatus('Menghantar ke Firestore...', false);
+    syncTeacherToFirestore(data, editIdx === '');
     clearUserForm();
     renderUsersTable();
 }
@@ -2048,12 +2120,15 @@ function quickActivateUser(idx) {
     usersList[idx].status = 'Aktif';
     usersList[idx].benarkan_login = true;
     localStorage.setItem('disposa_users_v1', JSON.stringify(usersList));
+    syncTeacherToFirestore(usersList[idx], false);
     renderUsersTable();
 }
 function deleteUser(idx) {
     if (!confirm('Padam pengguna ini daripada senarai aplikasi?')) return;
+    const idAplikasi = usersList[idx].id_aplikasi;
     usersList.splice(idx, 1);
     localStorage.setItem('disposa_users_v1', JSON.stringify(usersList));
+    deleteTeacherFromFirestore(idAplikasi);
     renderUsersTable();
 }
 function userStatusBadge(status) {
@@ -2179,13 +2254,13 @@ function downloadUsersRegisterPDF() {
 //  SCHOOL_ID yang SAMA supaya data disegerakkan dengan betul.
 // ============================================================
 const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyAAo-UK674n5jB_fVyTe0IcziPtQQx3_44",
-    authDomain: "disposa-one.firebaseapp.com",
-    projectId: "disposa-one",
-    storageBucket: "disposa-one.firebasestorage.app",
-    messagingSenderId: "970458399440",
-    appId: "1:970458399440:web:24b43fae7b0d29141554d5",
-    measurementId: "G-3BS1CGRK78" // pilihan
+    apiKey: "GANTI_DENGAN_API_KEY_ANDA",
+    authDomain: "nama-projek.firebaseapp.com",
+    projectId: "nama-projek",
+    storageBucket: "nama-projek.appspot.com",
+    messagingSenderId: "000000000000",
+    appId: "1:000000000000:web:0000000000000000000000",
+    measurementId: "" // pilihan
 };
 const SCHOOL_ID = "SKBT"; // ID sekolah / tenant - samakan dengan Aplikasi Android
 
@@ -2242,13 +2317,13 @@ async function syncToFirestore() {
         const base = db.collection('schools').doc(schoolId);
         const batchOps = [];
         assetsList.forEach(a => batchOps.push(base.collection('assets').doc(a.no).set(a, { merge: true })));
-        usersList.forEach(u => batchOps.push(base.collection('users').doc(u.id_aplikasi).set(u, { merge: true })));
+        usersList.forEach(u => batchOps.push(db.collection('teachers').doc(u.id_aplikasi).set(buildTeacherFirestoreDoc(u), { merge: true })));
         damageList.forEach(d => batchOps.push(base.collection('damage_reports').doc(d.no_laporan).set(d, { merge: true })));
         await Promise.all(batchOps);
         const now = new Date().toISOString();
         localStorage.setItem('disposa_firebase_last_sync', now);
         updateFbLastSyncDisplay();
-        setFbStatus(`Berjaya menghantar ${assetsList.length} aset, ${usersList.length} pengguna, dan ${damageList.length} laporan kerosakan ke Firestore.`, 'success');
+        setFbStatus(`Berjaya menghantar ${assetsList.length} aset, ${usersList.length} pengguna (koleksi "teachers"), dan ${damageList.length} laporan kerosakan ke Firestore.`, 'success');
     } catch (err) {
         setFbStatus(`Gagal menghantar data: ${err.message}`, 'error');
     }
@@ -2260,7 +2335,7 @@ async function pullFromFirestore() {
         const base = db.collection('schools').doc(schoolId);
         const [assetSnap, userSnap, damageSnap] = await Promise.all([
             base.collection('assets').get(),
-            base.collection('users').get(),
+            db.collection('teachers').get(),
             base.collection('damage_reports').get()
         ]);
         let addedDamage = 0;
@@ -2275,7 +2350,7 @@ async function pullFromFirestore() {
         });
         let addedUsers = 0;
         userSnap.forEach(doc => {
-            const u = doc.data();
+            const u = firestoreTeacherDocToLocal(doc.data(), doc.id);
             if (!usersList.some(x => x.id_aplikasi === u.id_aplikasi)) { usersList.unshift(u); addedUsers++; }
         });
         localStorage.setItem('disposa_damage_v1', JSON.stringify(damageList));
@@ -2286,7 +2361,7 @@ async function pullFromFirestore() {
         localStorage.setItem('disposa_firebase_last_sync', now);
         const lsEl = document.getElementById('fb-last-sync');
         if (lsEl) lsEl.innerHTML = `<i class="fas fa-history mr-1"></i> Penyegerakan terakhir: ${new Date(now).toLocaleString('ms-MY')}`;
-        setFbStatus(`Berjaya menarik ${addedAssets} aset baharu, ${addedUsers} pengguna baharu, dan ${addedDamage} laporan kerosakan baharu (cth. dihantar dari Aplikasi Android).`, 'success');
+        setFbStatus(`Berjaya menarik ${addedAssets} aset baharu, ${addedUsers} pengguna baharu (koleksi "teachers"), dan ${addedDamage} laporan kerosakan baharu (cth. dihantar dari Aplikasi Android).`, 'success');
     } catch (err) {
         setFbStatus(`Gagal menarik data: ${err.message}`, 'error');
     }
