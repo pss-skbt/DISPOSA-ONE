@@ -1103,8 +1103,16 @@
             <!-- ===================== PENDAFTARAN GURU & BUKAN GURU (APLIKASI ANDROID) ===================== -->
             <div id="view-pengguna" class="hidden">
                 <div class="max-w-6xl mx-auto space-y-6">
-                    <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-xl text-[11px] text-indigo-700">
-                        <i class="fas fa-mobile-alt mr-1"></i> Daftarkan Guru dan Bukan Guru (kakitangan sokongan) di sini untuk membolehkan mereka log masuk ke <b>Aplikasi Android DISPOSA ONE</b> (contohnya untuk mengimbas label QR aset, melapor kerosakan, dan menyemak status aset di lapangan). Setiap pengguna akan diberi <b>ID Aplikasi</b> dan kod QR log masuk yang unik.
+                    <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-xl text-[11px] text-indigo-700 leading-relaxed">
+                        <i class="fas fa-mobile-alt mr-1"></i> Daftarkan Guru dan Bukan Guru (kakitangan sokongan) di sini untuk membolehkan mereka log masuk ke <b>Aplikasi Android DISPOSA ONE</b> (contohnya untuk mengimbas label QR aset, melapor kerosakan, dan menyemak status aset di lapangan).
+                        <br><br>
+                        <b>Reka bentuk identiti pengguna:</b> Nama <u>bukan</u> digunakan sebagai identiti sebenar dalam aplikasi. Setiap pengguna diberi <b>ID Guru</b> yang dijana automatik di belakang tabir (cth. <code>GR0001</code>, <code>GR0002</code>...). Alirannya:
+                        <ol class="list-decimal ml-4 mt-1 space-y-0.5">
+                            <li>Admin mendaftar guru/bukan guru melalui Web App ini.</li>
+                            <li>Sistem menjana ID Guru secara automatik (tersembunyi daripada guru).</li>
+                            <li>Guru hanya mencari dan memilih nama mereka dalam Aplikasi Android.</li>
+                            <li>Aplikasi menyimpan <b>ID Guru</b> pada telefon (bukan nama) — semua laporan, gambar, dan rekod dirujuk menggunakan ID Guru ini.</li>
+                        </ol>
                     </div>
 
                     <div class="bg-white p-8 rounded-xl shadow-sm border">
@@ -1951,6 +1959,12 @@ function editUser(idx) {
     switchTab('pengguna');
     window.scrollTo(0, 0);
 }
+function quickActivateUser(idx) {
+    usersList[idx].status = 'Aktif';
+    usersList[idx].benarkan_login = true;
+    localStorage.setItem('disposa_users_v1', JSON.stringify(usersList));
+    renderUsersTable();
+}
 function deleteUser(idx) {
     if (!confirm('Padam pengguna ini daripada senarai aplikasi?')) return;
     usersList.splice(idx, 1);
@@ -1987,7 +2001,7 @@ function renderUsersTable() {
             <td class="p-3 border-b text-xs">${u.tarikh_daftar || '-'}</td>
             <td class="p-3 border-b text-right whitespace-nowrap">
                 <button onclick="showUserQr(${idx})" class="text-indigo-500 hover:text-indigo-700 mr-2" title="Kod QR Log Masuk"><i class="fas fa-qrcode"></i></button>
-                <button onclick="editUser(${idx})" class="text-blue-500 hover:text-blue-700 mr-2" title="Edit"><i class="fas fa-edit"></i></button>
+                ${u.status !== 'Aktif' ? `<button onclick="quickActivateUser(${idx})" class="text-emerald-600 hover:text-emerald-800 mr-2 font-bold" title="Aktifkan Pengguna"><i class="fas fa-toggle-on"></i> Aktifkan</button>` : `<button onclick="editUser(${idx})" class="text-blue-500 hover:text-blue-700 mr-2" title="Edit"><i class="fas fa-edit"></i></button>`}
                 <button onclick="deleteUser(${idx})" class="text-red-400 hover:text-red-600" title="Padam"><i class="fas fa-trash"></i></button>
             </td>`;
         tbody.appendChild(row);
